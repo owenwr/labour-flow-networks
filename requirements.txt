@@ -3,4 +3,10 @@ Sphinx
 coverage
 awscli
 flake8
+networkx
+numpy
+pandas
+tqdm
+pickle
+random
 python-dotenv>=0.5.1
