@@ -220,16 +220,16 @@ def main(
         info = 'flows' + flow_years + '_deaths' + death_years
         results_filename = 'res_' + info + '.pkl'
         mc_results_filename = 'mcres_' + info + '.pkl'
-        ouput_dir = os.path.join(project_root, 'data/processed')
+        output_dir = os.path.join(project_root, 'data/processed')
         if test==True:
             mc_results_filename = 'test_' + mc_results_filename
             results_filename = 'test_' + results_filename
-            reports_dir = os.path.join(ouput_dir, 'test')
+            output_dir = os.path.join(output_dir, 'test')
         if nrand != None:
             mc_results_filename = 'nrand' + str(nrand) +'_'+ mc_results_filename
             results_filename = 'nrand' + str(nrand) +'_'+ results_filename
-        results_filepath = os.path.join(ouput_dir, results_filename)
-        mc_results_filepath = os.path.join(ouput_dir, mc_results_filename)
+        results_filepath = os.path.join(output_dir, results_filename)
+        mc_results_filepath = os.path.join(output_dir, mc_results_filename)
 
         #check to see if output filepaths already exist:
         gen.CheckExistence(results_filepath, allow_overwrite=test)
@@ -243,7 +243,7 @@ def main(
         #==================================================================
         #---2. Determine dead firms based on a period of deaths.-----
         #==================================================================
-        deaths_filepath = os.path.join(project_root, deaths_filepath)
+        deaths_filepath = os.path.join(project_root, dat.deaths_filepath)
         dead_ids = dat.GetDeadIds(deaths_filepath, death_years, ndeathrows)
         print('Number dead firms: ' + str(len(dead_ids)))
         #==================================================================
@@ -299,14 +299,15 @@ def main(
         print('---Warning: code not fully tested')
         print('---No check to see if mcres already exists with some runs',
         ' in. This would allow more runs to be added at a later date.')
-        print('---Learn about environment variables')
+        print('COMPLETE')
 
 #================================================
 #---call main-----
 #================================================
 
 if __name__ == '__main__':
-    main(flow_years='1996-1997', death_years='all', nflowrows=40,
-            mc_runs=20, nrand=None, ndeathrows=None)
+    for d in ['1996-2006', '1996-2007', '1996-2008', '1996-2009', '1996-2010']:
+        main(flow_years='1996-1997', death_years=d, nflowrows=20,
+                mc_runs=2, nrand=None, ndeathrows=None)
 
 #add info about number of deaths to filename

@@ -85,28 +85,115 @@ input_filenames = [
                     #single years, deaths 9 years
                     ['mcres_flows1996-1997_deaths1996-2005.pkl',
                         'res_flows1996-1997_deaths1996-2005.pkl'],
+                    #single years, deaths 10 years
+                    ['mcres_flows1996-1997_deaths1996-2006.pkl',
+                        'res_flows1996-1997_deaths1996-2006.pkl'],
+                    #single years, deaths 11 years
+                    ['mcres_flows1996-1997_deaths1996-2007.pkl',
+                        'res_flows1996-1997_deaths1996-2007.pkl'],
+                    #single years, deaths 12 years
+                    ['mcres_flows1996-1997_deaths1996-2008.pkl',
+                        'res_flows1996-1997_deaths1996-2008.pkl'],
+                    #single years, deaths 13 years
+                    ['mcres_flows1996-1997_deaths1996-2009.pkl',
+                        'res_flows1996-1997_deaths1996-2009.pkl'],
+                    #single years, deaths 14 years
+                    ['mcres_flows1996-1997_deaths1996-2010.pkl',
+                        'res_flows1996-1997_deaths1996-2010.pkl'],
                     #single year, deaths all years, partially random dead firms
                     ['nrand8800_mcres_flows1996-1997_deathsall.pkl',
                         'nrand8800_res_flows1996-1997_deathsall.pkl']
                     ]
 
+same_flows = [
+                    #single years, deaths all
+                    ['mcres_flows1996-1997_deathsall.pkl',
+                        'res_flows1996-1997_deathsall.pkl'],
+                    #single years, deaths 1 year
+                    ['mcres_flows1996-1997_deaths1996-1997.pkl',
+                        'res_flows1996-1997_deaths1996-1997.pkl'],
+                    #single years, deaths two years
+                    ['mcres_flows1996-1997_deaths1996-1998.pkl',
+                        'res_flows1996-1997_deaths1996-1998.pkl'],
+                    #single years, deaths 3 years
+                    ['mcres_flows1996-1997_deaths1996-1999.pkl',
+                        'res_flows1996-1997_deaths1996-1999.pkl'],
+                    #single years, deaths 4 years
+                    ['mcres_flows1996-1997_deaths1996-2000.pkl',
+                        'res_flows1996-1997_deaths1996-2000.pkl'],
+                    #single years, deaths 5 years
+                    ['mcres_flows1996-1997_deaths1996-2001.pkl',
+                        'res_flows1996-1997_deaths1996-2001.pkl'],
+                    #single years, deaths 6 years
+                    ['mcres_flows1996-1997_deaths1996-2002.pkl',
+                        'res_flows1996-1997_deaths1996-2002.pkl'],
+                    #single years, deaths 7 years
+                    ['mcres_flows1996-1997_deaths1996-2003.pkl',
+                        'res_flows1996-1997_deaths1996-2003.pkl'],
+                    #single years, deaths 8 years
+                    ['mcres_flows1996-1997_deaths1996-2004.pkl',
+                        'res_flows1996-1997_deaths1996-2004.pkl'],
+                    #single years, deaths 9 years
+                    ['mcres_flows1996-1997_deaths1996-2005.pkl',
+                        'res_flows1996-1997_deaths1996-2005.pkl'],
+                    #single years, deaths 10 years
+                    ['mcres_flows1996-1997_deaths1996-2006.pkl',
+                        'res_flows1996-1997_deaths1996-2006.pkl'],
+                    #single years, deaths 11 years
+                    ['mcres_flows1996-1997_deaths1996-2007.pkl',
+                        'res_flows1996-1997_deaths1996-2007.pkl'],
+                    #single years, deaths 12 years
+                    ['mcres_flows1996-1997_deaths1996-2008.pkl',
+                        'res_flows1996-1997_deaths1996-2008.pkl'],
+                    #single years, deaths 13 years
+                    ['mcres_flows1996-1997_deaths1996-2009.pkl',
+                        'res_flows1996-1997_deaths1996-2009.pkl'],
+                    #single years, deaths 14 years
+                    ['mcres_flows1996-1997_deaths1996-2010.pkl',
+                        'res_flows1996-1997_deaths1996-2010.pkl']
+                    ]
+
+#---make filepaths---
+#filename_pairs = input_filenames
+filename_pairs = same_flows
+#filename_pairs = [same_flows[i] for i in [0, 9]]
+input_filepaths = []
+for filename_pair in filename_pairs:
+    mc_filepath = os.path.join(input_dir, filename_pair[0])
+    actual_filepath = os.path.join(input_dir, filename_pair[1])
+    filepath_pair = (mc_filepath, actual_filepath)
+    input_filepaths += [filepath_pair]
+
 #------------------------------------------
 #---1. Generate plots----------------------
 #------------------------------------------
 
-for filename_pair in input_filenames:
-    mc_filepath = os.path.join(input_dir, filename_pair[0])
-    actual_filepath = os.path.join(input_dir, filename_pair[1])
-    gen.CheckSameData(mc_filepath, actual_filepath)
-    '''vis.BoxPlot(
-                gen.GetPkl(mc_filepath), gen.GetPkl(actual_filepath),
-                ell_values = range(0, 10),
-                fig_dir=fig_dir, info=actual_filepath
-                )'''
-    vis.RatiosBarChart(
-                        gen.GetPkl(mc_filepath), gen.GetPkl(actual_filepath),
+bp = False
+bar_ratios = False
+ratios_overlay = True
+
+if bp==True:
+    for filename_pair in input_filenames[:1]:
+        mc_filepath = os.path.join(input_dir, filename_pair[0])
+        actual_filepath = os.path.join(input_dir, filename_pair[1])
+        gen.CheckSameData(mc_filepath, actual_filepath)
+        vis.BoxPlot(
+                    gen.GetPkl(mc_filepath), gen.GetPkl(actual_filepath),
+                    ell_values = range(0, 10),
+                    fig_dir=fig_dir, info=actual_filepath
+                    )
+if bar_ratios==True:
+    vis.RatiosBarCharts(
+                        input_filepaths,
                         ell_values = range(1, 8),
-                        fig_dir=fig_dir, info=actual_filepath
+                        fig_dir=fig_dir, log=False
                         )
+if ratios_overlay==True:
+    vis.RatiosOverlay(  input_filepaths,
+                        ell_values = range(0, 13),
+                        fig_dir=fig_dir, cal_at=4
+                        )
+
+#plt.show(a)
 
 #add option to produce histogram plots

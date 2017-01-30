@@ -24,7 +24,9 @@ def GetDeadIds(input_filepath=deaths_filepath, death_years='all', nrows=None):
         - input_filepath: filepath of dates_deat.csv with column format
         firm_id, year.
         - death_years: range of years we wish deaths in with format
-        'startyr-endyr', or 'all' for all deaths.
+        'startyr-endyr', or 'all' for all deaths. Deaths in the start year are
+        included, deaths in the end year are not, so to get deaths in 2009
+        require '1996-2010'.
     Output:
         - ids of firms that died in the specified period (or all firms
         that died).
