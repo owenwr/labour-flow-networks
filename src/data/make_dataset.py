@@ -143,5 +143,11 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
         print(nx.info(g))
     return g
 
+def DeadInLFN(dead_ids, graph):
+    '''
+    Get set of firms ids that are both dead and in the LFN.
+    '''
+    return set(dead_ids).intersection(set(graph.nodes()))
+
 if __name__ == '__main__':
     MakeLFN('1996-1997', nrows=10)

@@ -16,6 +16,7 @@ import os
 project_root = os.path.join(os.path.dirname(__file__), os.pardir)
 import visualisation.visualise as vis
 import general as gen
+import data.make_dataset as dat
 
 #------------------------------------------
 #---0. Get input and output filepaths------
@@ -150,12 +151,48 @@ same_flows = [
                         'res_flows1996-1997_deaths1996-2009.pkl'],
                     #single years, deaths 14 years
                     ['mcres_flows1996-1997_deaths1996-2010.pkl',
-                        'res_flows1996-1997_deaths1996-2010.pkl']
+                        'res_flows1996-1997_deaths1996-2010.pkl'],
+                    #single year, deaths all years, partially random dead firms
+                    ['nrand8800_mcres_flows1996-1997_deathsall.pkl',
+                        'nrand8800_res_flows1996-1997_deathsall.pkl']
+                    ]
+
+same_flows_every_third_year = [
+                    #single years, deaths all
+                    ['mcres_flows1996-1997_deathsall.pkl',
+                        'res_flows1996-1997_deathsall.pkl'],
+                    #single years, deaths 4 years
+                    ['mcres_flows1996-1997_deaths1996-2000.pkl',
+                        'res_flows1996-1997_deaths1996-2000.pkl'],
+                    #single years, deaths 7 years
+                    ['mcres_flows1996-1997_deaths1996-2003.pkl',
+                        'res_flows1996-1997_deaths1996-2003.pkl'],
+                    #single years, deaths 10 years
+                    ['mcres_flows1996-1997_deaths1996-2006.pkl',
+                        'res_flows1996-1997_deaths1996-2006.pkl'],
+                    #single years, deaths 13 years
+                    ['mcres_flows1996-1997_deaths1996-2009.pkl',
+                        'res_flows1996-1997_deaths1996-2009.pkl'],
+                    #single years, deaths 14 years
+                    ['mcres_flows1996-1997_deaths1996-2010.pkl',
+                        'res_flows1996-1997_deaths1996-2010.pkl'],
+                    #single year, deaths all years, partially random dead firms
+                    ['nrand8800_mcres_flows1996-1997_deathsall.pkl',
+                        'nrand8800_res_flows1996-1997_deathsall.pkl']
+                    ]
+
+looking_at_nrand =[
+                    #single years, deaths all
+                    ['mcres_flows1996-1997_deathsall.pkl',
+                        'res_flows1996-1997_deathsall.pkl'],
+                    #single year, deaths all years, partially random dead firms
+                    ['nrand8800_mcres_flows1996-1997_deathsall.pkl',
+                        'nrand8800_res_flows1996-1997_deathsall.pkl']
                     ]
 
 #---make filepaths---
 #filename_pairs = input_filenames
-filename_pairs = same_flows
+filename_pairs = looking_at_nrand
 #filename_pairs = [same_flows[i] for i in [0, 9]]
 input_filepaths = []
 for filename_pair in filename_pairs:
@@ -171,6 +208,8 @@ for filename_pair in filename_pairs:
 bp = False
 bar_ratios = False
 ratios_overlay = True
+degree_dist = False
+cc_dist = False
 
 if bp==True:
     for filename_pair in input_filenames[:1]:
@@ -191,8 +230,14 @@ if bar_ratios==True:
 if ratios_overlay==True:
     vis.RatiosOverlay(  input_filepaths,
                         ell_values = range(0, 13),
-                        fig_dir=fig_dir, cal_at=4
+                        fig_dir=fig_dir, cal_at=1
                         )
+if degree_dist == True:
+    g = dat.MakeLFN('1996-1997')
+    vis.DegreeDist(g)
+if cc_dist == True:
+    g = dat.MakeLFN('1996-1997')
+    vis.CCDist(g)
 
 #plt.show(a)
 

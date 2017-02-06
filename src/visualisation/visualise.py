@@ -12,6 +12,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.style.use('ggplot')
 import numpy as np
+import networkx as nx
 
 import general as gen
 
@@ -301,7 +302,8 @@ def RatiosOverlay(
         ax.plot(
                 x[start:end],
                 y[start:end],
-                label=label
+                label=label,
+                linewidth=2
                 )
         first_loop=False
     #add titles, axis labels, and formatting
@@ -309,6 +311,48 @@ def RatiosOverlay(
     matplotlib.rcParams.update({'font.size': 8})
     plt.title('Line chart showing ratios for different numbers of ' \
               'death years. With calibration at ' + str(cal_at))
+    plt.show()
+
+def DegreeDist(graph, loglog=True):
+    d = nx.degree(graph).values()
+    plt.hist(d, bins=1000)
+    if loglog == True:
+        plt.yscale('log')
+        plt.xscale('log')
+    plt.title('Degree Distribution.')
+    plt.show()
+
+def CCDist(graph):
+    cc_graphs = nx.connected_component_subgraphs(graph)
+    sizes = [len(g.nodes()) for g in cc_graphs]
+    sizes.sort()
+    fig, (ax, ax2) = plt.subplots(1, 2, sharey=True)
+    ax.hist(sizes[:-2])
+    ax2.hist(sizes)
+    ax.set_xlim(0, sizes[-2])
+    ax2.set_xlim(sizes[-1],)
+    ax2.get_xaxis().get_major_formatter().set_useOffset(False)
+    plt.xticks(rotation=90)
+    plt.yscale('log')
+    #turns spines off
+    ax.spines['right'].set_visible(False)
+    ax2.spines['left'].set_visible(False)
+    ax.yaxis.tick_left()
+    ax2.yaxis.tick_right()
+    ax.tick_params(labelright='off', labelleft='on')
+    #add diagonal lines
+    d = 0.025 #line size param
+    kwargs = dict(transform=ax.transAxes, color='k', clip_on=False)
+    ax.plot((1-d, 1+d), (-d, +d), **kwargs)
+    ax.plot((1-d, 1+d), (1-d, 1+d), **kwargs)
+    kwargs = dict(transform=ax2.transAxes, color='k', clip_on=False)
+    ax2.plot((-d, +d), (-d, +d), **kwargs)
+    ax2.plot((-d, +d), (1-d, 1+d), **kwargs)
+    #add titles and axes
+    ax.set_title('Histogram of sizes of connected components of graph.',
+                {'horizontalalignment': 'left'})
+    ax.set_xlabel('Component Size')
+    ax.set_ylabel('Frequency')
     plt.show()
 
 #end--
