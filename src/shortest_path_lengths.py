@@ -243,8 +243,7 @@ def main(
         #==================================================================
         #---2. Determine dead firms based on a period of deaths.-----
         #==================================================================
-        deaths_filepath = os.path.join(project_root, dat.deaths_filepath)
-        dead_ids = dat.GetDeadIds(deaths_filepath, death_years, ndeathrows)
+        dead_ids = dat.GetDeadIds(dat.deaths_filepath, death_years, ndeathrows)
         print('Number dead firms: ' + str(len(dead_ids)))
         #==================================================================
         #---3. Find the shortest path between each pair of nodes in the LFN.---
