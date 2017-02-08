@@ -103,8 +103,7 @@ def main(start, end):
     #------------------------------
     graph = dat.MakeLFN(flow_years, nrows=nflowrows)
 
-    deaths_filepath = os.path.join(project_root, dat.deaths_filepath)
-    dead_ids = dat.GetDeadIds(  input_filepath=deaths_filepath,
+    dead_ids = dat.GetDeadIds(  input_filepath=dat.deaths_filepath,
                                 death_years=death_years
                                 )
     #get set of nodes that are both dead and in the LFN

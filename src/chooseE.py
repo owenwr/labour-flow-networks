@@ -30,6 +30,7 @@ import random
 import matplotlib.pyplot as plt
 import tqdm
 import general as gen
+from data import make_dataset as dat
 import shortest_path_lengths as spl
 
 project_root = os.path.join(os.path.dirname(__file__), os.pardir)
@@ -39,20 +40,15 @@ project_root = os.path.join(os.path.dirname(__file__), os.pardir)
 #-----------------------------------------------------------------
 flowyears = '1996-1997'
 death_years = 'all'
-nflowrows = None
-ndeathrows = None
+nflowrows = 10
+ndeathrows = 10
 
 
 #-----------------------------------------------------------------
 #----1. Make LFN, get actual dead firms---------------------------
 #-----------------------------------------------------------------
-g = spl.MakeLFN(flowyears, nflowrows)
-deaths_filepath = os.path.join(
-                                project_root,
-                                'data', 'raw', '16-12-2016-Mega',
-                                'dates_death.csv'
-                                )
-dead_ids = spl.GetDeadIds(deaths_filepath, death_years, ndeathrows)
+g = dat.MakeLFN(flowyears, nflowrows)
+dead_ids = dat.GetDeadIds(dat.deaths_filepath, death_years, ndeathrows)
 total_number_dead = len(dead_ids)
 print('Number dead firms: ' + str(total_number_dead))
 dead_in_LFN = set(dead_ids).intersection(set(g.nodes()))

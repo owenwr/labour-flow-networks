@@ -306,7 +306,7 @@ def main(
 
 if __name__ == '__main__':
     for d in ['1996-2006', '1996-2007', '1996-2008', '1996-2009', '1996-2010']:
-        main(flow_years='1996-1997', death_years=d, nflowrows=20,
+        main(flow_years='1996-1997', death_years=d, nflowrows=2,
                 mc_runs=2, nrand=None, ndeathrows=None)
 
 #add info about number of deaths to filename
