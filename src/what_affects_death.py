@@ -107,7 +107,7 @@ def main(start, end):
                                 death_years=death_years
                                 )
     #get set of nodes that are both dead and in the LFN
-    dead_in_LFN = dat.DeadInLFN(dead_ids, graph)
+    dead_in_LFN = dat.DeadInLFN(graph, dead_ids)
 
     #get total number dead in LFN
     number_dead_in_LFN = len(dead_in_LFN)

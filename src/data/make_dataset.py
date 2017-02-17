@@ -28,7 +28,7 @@ def GetDeadIds(input_filepath=deaths_filepath, death_years='all', nrows=None):
         included, deaths in the end year are not, so to get deaths in 2009
         require '1996-2010'.
     Output:
-        - ids of firms that died in the specified period (or all firms
+        - set : ids of firms that died in the specified period (or all firms
         that died).
     '''
     imported_dead = pd.read_csv(input_filepath,
@@ -43,7 +43,7 @@ def GetDeadIds(input_filepath=deaths_filepath, death_years='all', nrows=None):
             firm, year = imported_dead[i]
             if year in range(startyr, endyr):
                 dead_ids += [firm]
-    return dead_ids
+    return set(dead_ids)
 
 def YrsFromStr(years):
     '''
@@ -143,11 +143,8 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
         print(nx.info(g))
     return g
 
-def DeadInLFN(dead_ids, graph):
+def DeadInLFN(graph, dead_ids):
     '''
     Get set of firms ids that are both dead and in the LFN.
     '''
     return set(dead_ids).intersection(set(graph.nodes()))
-
-if __name__ == '__main__':
-    MakeLFN('1996-1997', nrows=10)
