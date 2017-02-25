@@ -7,14 +7,15 @@ pairs of dead nodes between the shortest path is of length k.
 '''
 import os
 project_root = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+import sys
+sys.path.append(project_root)
 
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.style.use('ggplot')
 import numpy as np
 import networkx as nx
-
-import general as gen
+import src.general as gen
 
 def BoxPlotInset(inset_ell_value, mc_res, actual_res, figure, axes):
     inset_xticklabels = ['$\ell = $'+str(inset_ell_value)]

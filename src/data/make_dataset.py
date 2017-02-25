@@ -11,7 +11,6 @@ import numpy as np
 
 project_root = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 
-#from project root this is how to get to the deaths filepath
 deaths_filepath = os.path.join( project_root,
                                 'data', 'raw', '16-12-2016-Mega',
                                 'dates_death.csv'

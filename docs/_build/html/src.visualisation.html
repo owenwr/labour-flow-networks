@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src.visualisation package &#8212; labour-flow-networks 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="labour-flow-networks 0.1 documentation" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="src-visualisation-package">
+<h1>src.visualisation package<a class="headerlink" href="#src-visualisation-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.visualisation.visualise">
+<span id="src-visualisation-visualise-module"></span><h2>src.visualisation.visualise module<a class="headerlink" href="#module-src.visualisation.visualise" title="Permalink to this headline">¶</a></h2>
+<p>Functions for visualising shortest paths data.</p>
+<p>Data inputted in the form of dictionaries where keys k are path lengths and
+values are (lists of, corresponding to different Monte Carlo runs) the number of
+pairs of dead nodes between the shortest path is of length k.</p>
+<dl class="function">
+<dt id="src.visualisation.visualise.BoxPlot">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">BoxPlot</code><span class="sig-paren">(</span><em>mc_res</em>, <em>actual_res</em>, <em>ell_values</em>, <em>fig_dir=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.BoxPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create series of box plots for shortest path length data. ell=1 and ell=2
+boxplots are added as insets with larger scales.
+Args:</p>
+<blockquote>
+<div><ul class="simple">
+<li>mc_res: dictionary with keys as ell values and values as lists</li>
+</ul>
+<p>[ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead
+nodes between which the shortest path was of length ell in the ith Monte
+Carlo run
+- actual_res: dictionary, actual_res[ell] = &#8216;number of pairs of dead
+nodes between which shortest path is ell&#8217;
+- ell_values: list of ell values for which we want to generate box plots
+- fig_dir: directory where figures are stored
+- info: string containing the flow years and death years used for the
+data</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.visualisation.visualise.BoxPlotInset">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">BoxPlotInset</code><span class="sig-paren">(</span><em>inset_ell_value</em>, <em>mc_res</em>, <em>actual_res</em>, <em>figure</em>, <em>axes</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.BoxPlotInset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.visualisation.visualise.CCDist">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">CCDist</code><span class="sig-paren">(</span><em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.CCDist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.visualisation.visualise.DegreeDist">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">DegreeDist</code><span class="sig-paren">(</span><em>graph</em>, <em>loglog=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.DegreeDist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.visualisation.visualise.GetRatios">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">GetRatios</code><span class="sig-paren">(</span><em>mc_res</em>, <em>actual_res</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.GetRatios" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates dictionary of ratios of the actual result to the average result of
+the number of pairs of firms with each ell value.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first simple">
+<li>mc_res: dictionary with keys as ell values and values as lists</li>
+</ul>
+<p class="last">[ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead
+nodes between which the shortest path was of length ell in the ith Monte
+Carlo run
+- actual_res: dictionary, actual_res[ell] = &#8216;number of pairs of dead
+nodes between which shortest path is ell&#8217;</p>
+</dd>
+<dt>Output:</dt>
+<dd><ul class="first last simple">
+<li>dictionary such that dict[ell_value] = ratio</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.visualisation.visualise.RatiosBarCharts">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">RatiosBarCharts</code><span class="sig-paren">(</span><em>data_list</em>, <em>ell_values</em>, <em>fig_dir=None</em>, <em>overlay=False</em>, <em>log=False</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.RatiosBarCharts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces and saves plot of the ratio of the actual result to the average
+result of the number of pairs of firms with each ell value.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first simple">
+<li>data_list: list of tuples of filepaths in format</li>
+</ul>
+<p>[(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
+are for pickle files that contain the dictionaries with keys as ell
+values such that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the</li>
+</ul>
+<p>number of pairs of dead nodes between which the shortest path is
+ell in the ith Monte Carlo run,
+- actual_res_i[ell]= &#8216;number of pairs of dead nodes between which
+the shortest path is ell in actual LFN&#8217;</p>
+</div></blockquote>
+<ul class="last simple">
+<li>ell_values: list of ell values for which we want to generate bars</li>
+<li>fig_dir: directory where figures are stored</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.visualisation.visualise.RatiosOverlay">
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">RatiosOverlay</code><span class="sig-paren">(</span><em>data_list</em>, <em>ell_values</em>, <em>fig_dir=None</em>, <em>cal_at=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.RatiosOverlay" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Plots of ratio against ell value. Overlay plots for different death years.</div></blockquote>
+<p>Specifically, overlay each set of data in the lists [mc_res] and
+[actual_res] and rescale so that they are overlayed and the shape can be
+compared. Rescaling is done by shifting a curve up the y-axis <em>after</em> logs
+have been taken of the ratios.</p>
+<p>Intended to determine whether the behaviour for high ell values looks the
+same no matter how long we wait for deaths.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first simple">
+<li>data_list: list of tuples of filepaths in format</li>
+</ul>
+<p>[(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
+are for pickle files that contain the dictionaries with keys as ell
+values such that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the</li>
+</ul>
+<p>number of pairs of dead nodes between which the shortest path is
+ell in the ith Monte Carlo run,
+- actual_res_i[ell]= &#8216;number of pairs of dead nodes between which
+the shortest path is ell in actual LFN&#8217;</p>
+</div></blockquote>
+<ul class="last simple">
+<li>ell_values: list of ell values for which we want to generate box plots</li>
+<li>fig_dir: directory where figures are stored</li>
+<li>cal_at: int saying which ell_value we will calibrate at</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>plot</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.visualisation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.visualisation" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">src.visualisation package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-src.visualisation.visualise">src.visualisation.visualise module</a></li>
+<li><a class="reference internal" href="#module-src.visualisation">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/src.visualisation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+    </div>
+  </body>
+</html>
