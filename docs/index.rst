@@ -9,11 +9,12 @@ labour-flow-networks documentation
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    getting-started
    commands
-   modules
+   src
+   test_environment
 
 Indices and tables
 ==================

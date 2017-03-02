@@ -65,10 +65,12 @@ def FlowsPath(years, project_root=project_root):
     '''
     Generates filepath for flows.
 
-    input:
+    Args:
         - years: flow years to be used, in form 'year1-year2'
         - project_root
-    output: flows filepath
+
+    Returns:
+        - Flows filepath.
 
     '''
     raw_flows_dir = os.path.join(
@@ -94,8 +96,8 @@ def MakeFlowsDF(flow_years, nrows=None, manual_filepath=None):
 
     1. Check to see if flow file already exists
     2. If it doesn't exist then create it from raw data files (might be quicker
-      to do creation by pre-existing merged files but that would make the code
-      harder...)
+       to do creation by pre-existing merged files but that would make the code
+       harder...)
 
     '''
     try:
@@ -121,7 +123,7 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
     Args:
         - input_filepath: text file with col format
           firm1_ID, firm2_ID, number
-         - nrows: option to restrict the number of rows of flows read in.
+        - nrows: option to restrict the number of rows of flows read in.
            this allows for the creation of a smaller graph for testing.
     returns:
         - networkx graph

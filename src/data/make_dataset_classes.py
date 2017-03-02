@@ -31,10 +31,11 @@ def FlowsPath(years, project_root=project_root):
     '''
     Generates filepath for flows.
 
-    input:
+    Args:
         - years: flow years to be used, in form 'year1-year2'
         - project_root
-    output: flows filepath.
+    Returns:
+        - Flows filepath.
 
     '''
     raw_flows_dir = os.path.join(
@@ -71,7 +72,7 @@ def GetDeadIds(input_filepath=deaths_filepath, death_years='all', nrows=None):
           'startyr-endyr', or 'all' for all deaths. Deaths in the start year are
           included, deaths in the end year are not, so to get deaths in 2009
           require '1996-2010'.
-    Output:
+    Returns:
         - set : ids of firms that died in the specified period (or all firms
           that died).
 
@@ -128,7 +129,7 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
 
     Args:
         - input_filepath: text file with col format: firm1_ID, firm2_ID, number
-         - nrows: option to restrict the number of rows of flows read in.
+        - nrows: option to restrict the number of rows of flows read in.
            this allows for the creation of a smaller graph for testing.
     Returns:
         - networkx graph
@@ -159,19 +160,61 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
 class LFN:
     '''
     Class of Labour Flow Networks. Includes methods for creating, modifying,
-    and drawing information from Labour Flow Networks.
+    and analysing Labour Flow Networks.
 
-    - Inherit from the class of networkx networks.
-    - Make method: Create an LFN for the years specified
-    - FilepathInfo method: return a string to be used as part of a filename
-      specifying the key details of the LFN
+    The LFN is stored as a NetworkX graph in the attribute lfn.graph. All the
+    usual NetworkX methods can be called on this attribute. The dead/alive
+    status of a node is stored as a NetworkX node attribute, I also include
+    various methods for both getting and changing the death status of a node.
 
-    Node Attributes:
-        - 'Dead': dictionary mapping every node to True if node is dead or False
-        if node is alive.
+    To initialise an LFN object at minimum a string specifying the desired flow
+    years must be provided. The resulting LFN will include an edge for every
+    pair of firms between which a worker moved in these years.
 
-    Data Attributes
-        - dead_nodes: set of dead nodes.
+    To add further flow years to an LFN object that already exists, use the
+    Merge method. That is, create a new LFN with from the flows you want to add,
+    then merge these two LFNs. When merging, it is possible that the two LFN
+    objects do not agree about whether a node is dead; check docstring of the
+    Merge method for how I deal with this.
+
+    To kill nodes in an LFN object use the KillNodes method. If you want to kill
+    the nodes that died between a specific pair of years then use the GetDeadIds
+    method to find the relevant nodes and then pass this list into the KillNodes
+    method.
+
+    Attributes:
+        - graph : NetworkX graph
+            NetworkX graph ontaining the flow and death data. The
+            NetworkX node attribute 'Dead' is set to True if a node is
+            dead and False if it is alive. Note that NetworkX node
+            attributes can be accessed via the dictionary self.graph.node
+            or the list of tuples self.graph.nodes(data=True). I also
+            utilised the NetworkX attribute self.graph.name, which is just
+            a string containing the name 'Labour Flow Network'.
+        - flow_years : str
+            String containing information about the years of flow data that
+            have been used to create the LFN in the form 'yyyy-xxxx' where
+            yyyy and xxxx are years. When an LFN object is the result of a
+            merge of two other LFNs flow_years is instead in form
+            'yyyy-xxxx, aaaa-bbbb, ...'.
+        - dead_ids : set
+            Set containing the firm ID of every firm that has been passed into
+            the KillNodes method for this LFN (or its parent LFNs if it is the
+            product of a merge). Differs from dead_nodes because it contains
+            nodes that are *not* in the network.
+        - dead_nodes: set
+            Set of nodes in self.graph that have Dead attribute True, ie, the
+            dead firms in the network.
+        - death_years: str
+            String in form 'xxxx-yyyy' where xxxx and yyyy are years specifying
+            years from which we have taken the dead firms. **Warning**: a firm
+            dying in year in death_years is neither necessary nor sufficient for
+            its being marked as dead in the LFN object. This is because node
+            attributes can always be over-written, which is common in the
+            following two cases:
+
+                (i)  Firms can be marked as alive through the AllAlive(), and
+                (ii) Firms can be marked as dead through KillNodes.
 
     '''
 
@@ -182,10 +225,12 @@ class LFN:
                 show_info=True
                 ):
         '''
-        Create LFN from specified flowyears and add corresponding filepath info.
-        If deathyears provided add dead_ids and dead_nodes data attributes
-        and mark dead nodes in graph as dead.
+        Create LFN from specified flow years and set all nodes to alive. If
+        death years are provided then mark the appropriate nodes as dead.
 
+        Args:
+            show_info : bool
+                If True then info on the LFN graph is printed out.
         '''
 
         #make LFN from flow years
@@ -209,6 +254,7 @@ class LFN:
                                     )
             self.dead_nodes = set(DeadInLFN(self.graph, self.dead_ids))
             self.KillNodes(self.dead_nodes)
+        #simple check that LFN object makes sense
         self.CheckConsistency()
         if show_info == True:
             self.PrintInfo()
@@ -276,7 +322,7 @@ class LFN:
         one that takes precedence.
 
         lfn : LFN object.
-        
+
         '''
         #the order of the lfn args dictates which one gets priority with nodeattrs
         self.graph = nx.compose(lfn.graph, self.graph)

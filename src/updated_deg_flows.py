@@ -7,6 +7,10 @@ degree. Specifically, we can generate a matrix M[i, j] that records the flows
 from updated degree i to updated degree j.
 
 '''
+import numpy as np
+import matplotlib.pyplot as plt
+import data.make_dataset_classes as dat
+
 
 def UpdatedDegreeFlowMatrix(lfn, year=2000):
     '''
@@ -26,19 +30,16 @@ def UpdatedDegreeFlowMatrix(lfn, year=2000):
         year : int
 
     Returns:
-        A : 2D numpy array
+        (a) (2D numpy array)
             A[i, j] is the flow from i to j during the the year.
-        B : 1D numpy array
+        (b) (1D numpy array)
             B[i] is the number of firms with updated degree i that die.
-            
+
     '''
-    #set parameters
-    t = 1997
-    #get LFN
-    lfn = LFN('1996-1997')
-    #kill all nodes that die before year t
-    #first find the nodes that are dead before t
-    death_years = dat.StrFromYrs(1996, t)
+    print('Warning: Currently Must Use year=1997 or 1998')
+    #kill all nodes that die before the specified year
+    #first find the nodes that are dead before the specified year
+    death_years = dat.StrFromYrs(1996, year)
     dead_ids = dat.GetDeadIds(death_years=death_years)
     #then kill them
     lfn.KillNodes(dead_ids)
@@ -52,7 +53,7 @@ def UpdatedDegreeFlowMatrix(lfn, year=2000):
     for node in alive_nodes:
         updtd_degs[node] = [lfn.UpdatedDegree(node), None]
     #now kill all nodes that die during t
-    death_years = dat.StrFromYrs(t, t+1)
+    death_years = dat.StrFromYrs(year, year+1)
     dead_ids = dat.GetDeadIds(death_years=death_years)
     dead_nodes = dat.DeadInLFN(lfn.graph, dead_ids)
     lfn.KillNodes(dead_ids)
@@ -82,3 +83,14 @@ def UpdatedDegreeFlowMatrix(lfn, year=2000):
             B[i] += 1
         else:
             A[i, j] += 1
+    return A, B
+
+def main():
+    '''
+    Print out in text and as an image the matrix of updated degree flows.
+    '''
+    print(A[:n, :n])
+    plt.matshow(A[:n, :n])
+
+if __name__ == '__main__':
+    main()
