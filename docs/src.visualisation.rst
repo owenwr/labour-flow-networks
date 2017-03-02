@@ -1,10 +1,7 @@
-src.visualisation package
+Visualisation package
 =========================
 
-Submodules
-----------
-
-src.visualisation.visualise module
+Visualise module
 ----------------------------------
 
 .. automodule:: src.visualisation.visualise

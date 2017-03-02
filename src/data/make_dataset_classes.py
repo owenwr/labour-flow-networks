@@ -14,7 +14,7 @@ project_root = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 
 def YrsFromStr(years):
     '''
-    Take string in format 'year1-year2' and return integers year1, year2
+    Take string in format 'year1-year2' and return integers year1, year2.
     '''
     year1 = int(years[:4])
     year2 = int(years[5:])
@@ -22,7 +22,7 @@ def YrsFromStr(years):
 
 def StrFromYrs(year1, year2):
     '''
-    Create string in format 'year1-year2' from integers year1, year2
+    Create string in format 'year1-year2' from integers year1, year2.
     '''
     assert type(year1) == type(year2) and type(year1) == int
     return str(year1) + '-' + str(year2)
@@ -30,10 +30,12 @@ def StrFromYrs(year1, year2):
 def FlowsPath(years, project_root=project_root):
     '''
     Generates filepath for flows.
+
     input:
         - years: flow years to be used, in form 'year1-year2'
         - project_root
-    output: flows filepath
+    output: flows filepath.
+
     '''
     raw_flows_dir = os.path.join(
                                 project_root,
@@ -64,14 +66,15 @@ def GetDeadIds(input_filepath=deaths_filepath, death_years='all', nrows=None):
 
     Args:
         - input_filepath: filepath of dates_deat.csv with column format
-        firm_id, year.
+          firm_id, year.
         - death_years: range of years we wish deaths in with format
-        'startyr-endyr', or 'all' for all deaths. Deaths in the start year are
-        included, deaths in the end year are not, so to get deaths in 2009
-        require '1996-2010'.
+          'startyr-endyr', or 'all' for all deaths. Deaths in the start year are
+          included, deaths in the end year are not, so to get deaths in 2009
+          require '1996-2010'.
     Output:
         - set : ids of firms that died in the specified period (or all firms
-        that died).
+          that died).
+
     '''
     imported_dead = pd.read_csv(input_filepath,
                                 delimiter=',', dtype=np.int, nrows=nrows)
@@ -96,10 +99,12 @@ def DeadInLFN(graph, dead_ids):
 def MakeFlowsDF(flow_years, nrows=None, manual_filepath=None):
     '''
     Generates a new list of flows from two lists of flows.
+
     1. Check to see if flow file already exists
     2. If it doesn't exist then create it from raw data files (might be quicker
-    to do creation by pre-existing merged files but that would make the code
-    harder...)
+       to do creation by pre-existing merged files but that would make the code
+       harder...)
+
     '''
     try:
         flows_filepath = FlowsPath(flow_years)
@@ -122,12 +127,12 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
     Make Labour Flow Network where one job change is sufficient for a link.
 
     Args:
-        - input_filepath: text file with col format
-         firm1_ID, firm2_ID, number
+        - input_filepath: text file with col format: firm1_ID, firm2_ID, number
          - nrows: option to restrict the number of rows of flows read in.
-         this allows for the creation of a smaller graph for testing.
+           this allows for the creation of a smaller graph for testing.
     Returns:
         - networkx graph
+
     '''
     #note that pandas deals with the header automatically so there
     # is no need to do skiprows=1
@@ -153,51 +158,69 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
 
 class LFN:
     '''
-    Class of Labour Flow Networks.
+    Class of Labour Flow Networks. Includes methods for creating, modifying,
+    and drawing information from Labour Flow Networks.
 
     - Inherit from the class of networkx networks.
     - Make method: Create an LFN for the years specified
     - FilepathInfo method: return a string to be used as part of a filename
-    specifying the key details of the LFN
+      specifying the key details of the LFN
 
     Node Attributes:
-        'Dead': dictionary mapping every node to True if node is dead or False
+        - 'Dead': dictionary mapping every node to True if node is dead or False
         if node is alive.
 
     Data Attributes
-        dead_nodes: set of dead nodes.
+        - dead_nodes: set of dead nodes.
+
     '''
 
     def __init__(
                 self,
                 flow_years, nflow_rows=None,
-                death_years=None, ndeath_rows=None
+                death_years=None, ndeath_rows=None,
+                show_info=True
                 ):
         '''
         Create LFN from specified flowyears and add corresponding filepath info.
         If deathyears provided add dead_ids and dead_nodes data attributes
         and mark dead nodes in graph as dead.
+
         '''
 
-        self.graph = MakeLFN(flow_years, nrows=nflow_rows)
-        self.filepath_info = 'flows' + flow_years
+        #make LFN from flow years
+        self.graph = MakeLFN(flow_years, nrows=nflow_rows, print_info=False)
+        #change graph name to remove info about flow years. This is to avoid
+        #possible inconsistencies with the self.flow_years attribute after merging
+        #lfns
+        self.graph.name = 'Labour Flow Network'
+        #set flow years attribute
+        self.flow_years = flow_years
+        #set all firms by default to alive
         self.AllAlive()
+        #initialise dead ids and dead nodes attributes to empty
         self.dead_ids = set()
         self.dead_nodes = set()
+        #set death years attribute
+        self.death_years = str(death_years)
         if death_years != None:
-            self.filepath_info = self.filepath_info + '_deaths' + death_years
             self.dead_ids = GetDeadIds(
                                     death_years=death_years, nrows=ndeath_rows
                                     )
             self.dead_nodes = set(DeadInLFN(self.graph, self.dead_ids))
             self.KillNodes(self.dead_nodes)
+        self.CheckConsistency()
+        if show_info == True:
+            self.PrintInfo()
 
     def PrintInfo(self):
         '''
         Print info on LFN.
         '''
-        nx.info(self.graph)
-        print('Death Years: ' + death_years)
+        print(nx.info(self.graph))
+        print('Death Years: ' + self.death_years)
+        print('Flow Years: ' + self.flow_years)
+        print('============================')
 
     def AllAlive(self):
         '''
@@ -214,14 +237,13 @@ class LFN:
         Also updates the 'dead_nodes' list.
         '''
         dead_nodes = DeadInLFN(self.graph, dead_ids)
-        new_dead_nodes = set(dead_nodes).difference(self.dead_nodes)
         #update attributes
         dead_dict = nx.get_node_attributes(self.graph, 'Dead')
-        for node in new_dead_nodes:
+        for node in dead_nodes:
             dead_dict[node] = True
         nx.set_node_attributes(self.graph, 'Dead', dead_dict)
         #add new dead nodes to list of dead nodes
-        self.dead_nodes = self.dead_nodes.union(set(new_dead_nodes))
+        self.dead_nodes = self.dead_nodes.union(set(dead_nodes))
         self.dead_ids = self.dead_ids.union(set(dead_ids))
 
     def AliveNodes(self):
@@ -244,3 +266,34 @@ class LFN:
         neighs = nx.neighbors(self.graph, node)
         alive_neighs = [neigh for neigh in neighs if not self.NodeDead(neigh)]
         return len(alive_neighs)
+
+    def MergeLFNs(self, lfn, show_info=True):
+        '''
+        Add new edges and nodes from two LFNs.
+
+        Note that where there are inconsistencies in the node attributes between
+        the two LFNs the LFN from which we are calling the method (ie, self) is the
+        one that takes precedence.
+
+        lfn : LFN object.
+        
+        '''
+        #the order of the lfn args dictates which one gets priority with nodeattrs
+        self.graph = nx.compose(lfn.graph, self.graph)
+        #combine flow years
+        self.flow_years = self.flow_years + ', ' + lfn.flow_years
+        #combine death years
+        self.death_years = self.death_years + ', ' + lfn.death_years
+        #print info
+        if show_info == True:
+            self.PrintInfo()
+
+    def CheckConsistency(self):
+        '''
+        Check the consistency of various LFN features.
+        '''
+        #check that all nodes in dead_nodes are in dead_ids
+        assert self.dead_nodes.issubset(self.dead_ids)
+        #check that all and only nodes in dead_nodes have 'Dead' attribute True
+        dead_attr = [x[0] for x in self.graph.nodes(data=True) if x[1]['Dead']]
+        assert set(dead_attr) == self.dead_nodes

@@ -14,11 +14,14 @@ of nrand that gets close to e=E.
 1. Make LFN, get actual dead firms
 2. Get actual number of dead first neighbours, E
 3. Try different values of nrand and find e.
-    - Choose these values in the interval [1, N-E]. The upper limit here is
-    because (assuming the average degree is greater than 1) after we choose
-    nrand=N-E firms then there should be at least E pairs of first neighbours.
+
+    (a) Choose these values in the interval [1, N-E]. The upper limit here is
+        because (assuming the average degree is greater than 1) after we choose
+        nrand=N-E firms then there should be at least E pairs of first neighbours.
+
 4. Plot e vs nrand
-    - By eye pick a value of nrand that generates and e close to E
+
+    (a) By eye pick a value of nrand that generates and e close to E
 
 n.b. there is an element of randomness: every partially random selection is just
 that - random. Therefore we have to be wary of the statistics. However, if we

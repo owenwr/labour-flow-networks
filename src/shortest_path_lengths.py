@@ -8,7 +8,8 @@ a Monte Carlo, where dead nodes are chosen at random, are produced.
 3. Find the shortest path between each pair of nodes in the LFN.
 4. Find shortest path length between each pair of dead firms.
 5. Compare ell values for the acutal dead firms with a Monte Carlo Simulation
-where dead firms are picked at random (but the total number dead is fixed).
+   where dead firms are picked at random (but the total number dead is fixed).
+
 '''
 
 #================================================
@@ -39,16 +40,18 @@ def SHPToArray(shp_dictofdicts):
     '''
     Transform dict of dicts to array plus dictionay mapping firm IDs to row
     numbers and tuple mapping row numbers to firm IDs.
+
     Args:
         - shp_dictofdicts: dictionary of dictionaries such that d[i][j] is the
-        shortest path length between firms i and j.
+          shortest path length between firms i and j.
     Outputs:
         - shp_array: array such that a[i][j] is the shortest path length between
-        firms i and j.
+          firms i and j.
         - row_to_id: tuple such that row_to_id[i] gives the firm ID that row i
-        in shp_array corresponds to
+          in shp_array corresponds to
         - id_to_row: dictionary such that id_to_row[i] gives the row in
-        shp_array that ID i maps to.
+          shp_array that ID i maps to.
+
     '''
     shp_df = pd.DataFrame(shp_dictofdicts)
     shp_df = shp_df.fillna(-1) #fill NaNs (which correspond to no path) with -1
@@ -77,14 +80,17 @@ def DeadRowsRand(number_dead, all_rows):
     '''
     Get a random selection of n=number_dead dead rows from the shortest paths
     array.
+
     Note that all_rows is a mutable type and is passed by value so this function
     changes it, that doesn't matter though - it's just shuffling the order.
+
     Args:
         - number_dead: number of rows we want to kill
         - all_rows: list of all the rows (which represent firms in the graph)
-        in shp_array. This is equivalent to range(len(shp_array)).
+          in shp_array. This is equivalent to range(len(shp_array)).
     Returns:
-        - array of number_dead dead rows from all_rows
+        - array of number_dead dead rows from all_rows.
+
     '''
     assert number_dead < len(all_rows) #sanity check
     random.shuffle(all_rows)
@@ -92,7 +98,7 @@ def DeadRowsRand(number_dead, all_rows):
 
 def DeadFirstNeighs(graph, dead_ids):
     '''
-    Get E (the number of edges that connect dead firms in the actual data)
+    Get E (the number of edges that connect dead firms in the actual data).
     '''
     dead_subgraph = nx.subgraph(graph, dead_ids)
     return nx.number_of_edges(dead_subgraph)
@@ -126,7 +132,7 @@ def DeadRowsPartialRand(
     Args:
         - number_dead: number of rows we want to kill
         - all_rows: list of all the rows (which represent firms in the graph)
-        in shp_array. This is equivalent to range(len(shp_array)).
+          in shp_array. This is equivalent to range(len(shp_array)).
         - graph: the relevant LFN
         - nrand: the number of dead firms chosen in an uncorrelated way.
     Returns:
@@ -155,12 +161,13 @@ def DeadRowsPartialRand(
 def MCAddRun(mc_results, mc_results_single):
     '''
     Updates the mc_results variable with the results of a Monte Carlo run.
+
     Args:
         - mc_results: stores all Monte Carlo results,
-        mc_results[ell] = [no. pairs with ell in run 1, no. pairs with ell in
-        run 2, ...]
+          mc_results[ell] = [no. pairs with ell in run 1, no. pairs with ell in
+          run 2, ...]
         - mc_results_single: results of a single Monte Carlo Run, ie,
-        mc_results[ell] = no. pairs of dead rows with ell in last MC run.
+          mc_results[ell] = no. pairs of dead rows with ell in last MC run.
     '''
     assert mc_results.keys() == mc_results_single.keys() #sanity check
     for ell in mc_results_single.keys():
@@ -180,33 +187,35 @@ def main(
         '''
         Args:
             - flow_years: format 'year1-year2'. The LFN will be created from
-            flows in this time period.
-            - death_years: 'all' or 'starty-endyr'. If 'all' then all firm deaths
-            will be considered, if string in form stated is provided then only
-             deaths in the specified years are considered.
+              flows in this time period.
+            - death_years: 'all' or 'starty-endyr'. If 'all' then all firm
+              deaths will be considered, if string in form stated is provided
+              then only deaths in the specified years are considered.
             - nflowrows: can be used to resrict the number of lines of the flow
-            file that are read. This speeds things up (since the resulting LFN
-            is smaller).
+              file that are read. This speeds things up (since the resulting LFN
+              is smaller).
             - ndeathrows: can be used to restrict the number of lines of the
-            death file that are read.
-            - mc_runs: the number of Monte Carlo runs to be completed
+              death file that are read.
+            - mc_runs: the number of Monte Carlo runs to be completed.
             - mc_force_number_dead: default for number of dead firms in the
-            Monte Carlo is the number that actuall died in the period. However,
-            with this input you can choose the number of firms to be randomly
-            chosen to die.
+              Monte Carlo is the number that actuall died in the period.
+              However, with this input you can choose the number of firms to be
+              randomly chosen to die.
             - proportion_rand: proportion of dead firms in each Monte Carlo runs
-            that are chosen completely at random (the remaining dead firms are
-            chosen from the neighbours of the already dead firms). See docs for
-            DeadRowsPartialRand.
+              that are chosen completely at random (the remaining dead firms are
+              chosen from the neighbours of the already dead firms). See docs
+              for DeadRowsPartialRand.
         Outputs:
             - results: the number of pairs of dead nodes between which the
-            shortest path is ell for every possible ell. Stored as dictionary
-            results[ell] = no. pairs dead nodes with this ell. Saved to reports.
+              shortest path is ell for every possible ell. Stored as dictionary
+              results[ell] = no. pairs dead nodes with this ell. Saved to
+              reports.
             - mc_results: similar to results, except this time we repeat over
-            and over for 'dead' nodes chosen at random in the Monte Carlo. Also
-            saved to reports.
-            (nb if the number of rows being read in is restricted then the
-            filename is prepended with 'TEST')
+              and over for 'dead' nodes chosen at random in the Monte Carlo.
+              Also saved to reports.
+            - nb if the number of rows being read in is restricted then the
+              filename is prepended with 'TEST'.
+
         '''
         #==================================================================
         #--- 0.0. Check to see if test---

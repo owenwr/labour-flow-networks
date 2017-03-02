@@ -14,10 +14,6 @@ Contents:
    getting-started
    commands
    modules
-   src.data
-   src
-   src.visualisation
-   test_environment
 
 Indices and tables
 ==================

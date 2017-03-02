@@ -45,16 +45,18 @@ def PropPlot(
             fig_dir
             ):
     '''
-    Plot proportions
+    Plot proportions.
+
     Args:
-        - start: first x value we want
-        - end: last x value we want
-        dead_counted: collections module count dict of number of dead firms with
-        each value of the feature.
-        all_counted: as dead_counted except for all nodes in LFN
-        prop_dead: dictionary mapping feature values to proportion dead
-        total_prop_dead: overall proportion of firms in the LFN that died
-        feature: we examine the effect of the feature on the death rate
+        - start: first x value we want.
+        - end: last x value we want.
+        - dead_counted: collections module count dict of number of dead firms
+          with each value of the feature.
+        - all_counted: as dead_counted except for all nodes in LFN.
+        - prop_dead: dictionary mapping feature values to proportion dead.
+        - total_prop_dead: overall proportion of firms in the LFN that died.
+        - feature: we examine the effect of the feature on the death rate.
+
     '''
     fig, (ax, ax2) = plt.subplots(2, 1, figsize=(6, 9))
     #plot distributions

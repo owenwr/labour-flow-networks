@@ -1,4 +1,4 @@
-src package
+src
 ===========
 
 Subpackages
@@ -9,18 +9,12 @@ Subpackages
     src.data
     src.visualisation
 
-Submodules
-----------
-
-src.C_shortest_path_lengths module
+C_shortest_path_lengths module
 ----------------------------------
 
-.. automodule:: src.C_shortest_path_lengths
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Can't use automodule since it doesn't like the way I do the pyxinstall.
 
-src.chooseE module
+chooseE module
 ------------------
 
 .. automodule:: src.chooseE
@@ -28,7 +22,7 @@ src.chooseE module
     :undoc-members:
     :show-inheritance:
 
-src.general module
+general module
 ------------------
 
 .. automodule:: src.general
@@ -36,7 +30,7 @@ src.general module
     :undoc-members:
     :show-inheritance:
 
-src.make_figures module
+make_figures module
 -----------------------
 
 .. automodule:: src.make_figures
@@ -44,7 +38,7 @@ src.make_figures module
     :undoc-members:
     :show-inheritance:
 
-src.setup module
+setup module
 ----------------
 
 .. automodule:: src.setup
@@ -52,7 +46,7 @@ src.setup module
     :undoc-members:
     :show-inheritance:
 
-src.shortest_path_lengths module
+shortest_path_lengths module
 --------------------------------
 
 .. automodule:: src.shortest_path_lengths
@@ -60,7 +54,7 @@ src.shortest_path_lengths module
     :undoc-members:
     :show-inheritance:
 
-src.shortest_path_lengths_speedup module
+shortest_path_lengths_speedup module
 ----------------------------------------
 
 .. automodule:: src.shortest_path_lengths_speedup
@@ -68,7 +62,7 @@ src.shortest_path_lengths_speedup module
     :undoc-members:
     :show-inheritance:
 
-src.summary_stats_plots module
+summary_stats_plots module
 ------------------------------
 
 .. automodule:: src.summary_stats_plots
@@ -76,7 +70,7 @@ src.summary_stats_plots module
     :undoc-members:
     :show-inheritance:
 
-src.updated_degree module
+updated_degree module
 -------------------------
 
 .. automodule:: src.updated_degree
@@ -84,7 +78,15 @@ src.updated_degree module
     :undoc-members:
     :show-inheritance:
 
-src.what_affects_death module
+updated_deg_flows module
+----------------------------
+
+.. automodule:: src.updated_deg_flows
+	:members:
+	:undoc-members:
+	:show-inheritance:
+
+what_affects_death module
 -----------------------------
 
 .. automodule:: src.what_affects_death

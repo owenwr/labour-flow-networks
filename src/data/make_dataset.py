@@ -19,16 +19,18 @@ deaths_filepath = os.path.join( project_root,
 def GetDeadIds(input_filepath=deaths_filepath, death_years='all', nrows=None):
     '''
     Get firms that died in one of the years in death_years.
+
     Args:
         - input_filepath: filepath of dates_deat.csv with column format
-        firm_id, year.
+          firm_id, year.
         - death_years: range of years we wish deaths in with format
-        'startyr-endyr', or 'all' for all deaths. Deaths in the start year are
-        included, deaths in the end year are not, so to get deaths in 2009
-        require '1996-2010'.
+          'startyr-endyr', or 'all' for all deaths. Deaths in the start year are
+          included, deaths in the end year are not, so to get deaths in 2009
+          require '1996-2010'.
     Output:
         - set : ids of firms that died in the specified period (or all firms
-        that died).
+          that died).
+
     '''
     imported_dead = pd.read_csv(input_filepath,
                                 delimiter=',', dtype=np.int, nrows=nrows)
@@ -62,10 +64,12 @@ def StrFromYrs(year1, year2):
 def FlowsPath(years, project_root=project_root):
     '''
     Generates filepath for flows.
+
     input:
         - years: flow years to be used, in form 'year1-year2'
         - project_root
     output: flows filepath
+
     '''
     raw_flows_dir = os.path.join(
                                 project_root,
@@ -87,10 +91,12 @@ def FlowsPath(years, project_root=project_root):
 def MakeFlowsDF(flow_years, nrows=None, manual_filepath=None):
     '''
     Generates a new list of flows from two lists of flows.
+
     1. Check to see if flow file already exists
     2. If it doesn't exist then create it from raw data files (might be quicker
-    to do creation by pre-existing merged files but that would make the code
-    harder...)
+      to do creation by pre-existing merged files but that would make the code
+      harder...)
+
     '''
     try:
         flows_filepath = FlowsPath(flow_years)
@@ -114,9 +120,9 @@ def MakeLFN(flow_years, nrows=None, manual_filepath=None, print_info=True):
 
     Args:
         - input_filepath: text file with col format
-         firm1_ID, firm2_ID, number
+          firm1_ID, firm2_ID, number
          - nrows: option to restrict the number of rows of flows read in.
-         this allows for the creation of a smaller graph for testing.
+           this allows for the creation of a smaller graph for testing.
     returns:
         - networkx graph
     '''

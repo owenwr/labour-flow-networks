@@ -1,3 +1,10 @@
+'''
+Cython script for Dead Shortest Paths function. I use this since this loop
+seems to take a long time in Python. I have since been told that I could
+re-write this in Python but using numpy arrays in a more intelligent way to make
+the looping faster.
+'''
+
 import Cython
 import numpy as np
 cimport numpy as np

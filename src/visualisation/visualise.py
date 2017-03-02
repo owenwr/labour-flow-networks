@@ -44,17 +44,19 @@ def BoxPlot(mc_res, actual_res, ell_values, fig_dir=None, info=None):
     '''
     Create series of box plots for shortest path length data. ell=1 and ell=2
     boxplots are added as insets with larger scales.
+
     Args:
         - mc_res: dictionary with keys as ell values and values as lists
-        [ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead
-        nodes between which the shortest path was of length ell in the ith Monte
-        Carlo run
+          [ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead
+          nodes between which the shortest path was of length ell in the ith
+          Monte Carlo run
         - actual_res: dictionary, actual_res[ell] = 'number of pairs of dead
-        nodes between which shortest path is ell'
+          nodes between which shortest path is ell'
         - ell_values: list of ell values for which we want to generate box plots
         - fig_dir: directory where figures are stored
         - info: string containing the flow years and death years used for the
-        data
+          data
+
     '''
     plt.clf()
     #Check to see if there are shortest path lenghts in one dictionary that are
@@ -127,13 +129,15 @@ def GetRatios(mc_res, actual_res):
 
     Args:
         - mc_res: dictionary with keys as ell values and values as lists
-        [ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead
-        nodes between which the shortest path was of length ell in the ith Monte
-        Carlo run
+          [ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead
+          nodes between which the shortest path was of length ell in the ith
+          Monte Carlo run.
         - actual_res: dictionary, actual_res[ell] = 'number of pairs of dead
-        nodes between which shortest path is ell'
-    Output:
+          nodes between which shortest path is ell'
+
+    Returns:
         - dictionary such that dict[ell_value] = ratio
+
     '''
     #Get the average number of firms with each ell value from Monte Carlo
     mc_avg = dict()
@@ -161,13 +165,16 @@ def RatiosBarCharts(
         [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
         are for pickle files that contain the dictionaries with keys as ell
         values such that:
+
             - mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the
-            number of pairs of dead nodes between which the shortest path is
-            ell in the ith Monte Carlo run,
+              number of pairs of dead nodes between which the shortest path is
+              ell in the ith Monte Carlo run,
             - actual_res_i[ell]= 'number of pairs of dead nodes between which
-            the shortest path is ell in actual LFN'
+              the shortest path is ell in actual LFN'
+
         - ell_values: list of ell values for which we want to generate bars
         - fig_dir: directory where figures are stored
+
     '''
     #loop over data_list
     for filepath_pair in data_list:
@@ -227,7 +234,7 @@ def RatiosOverlay(
                     fig_dir=None, cal_at=None
                 ):
     '''
-        Plots of ratio against ell value. Overlay plots for different death years.
+    Plots of ratio against ell value. Overlay plots for different death years.
 
     Specifically, overlay each set of data in the lists [mc_res] and
     [actual_res] and rescale so that they are overlayed and the shape can be
@@ -239,19 +246,23 @@ def RatiosOverlay(
 
     Args:
         - data_list: list of tuples of filepaths in format
-        [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
-        are for pickle files that contain the dictionaries with keys as ell
-        values such that:
+          [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
+          are for pickle files that contain the dictionaries with keys as ell
+          values such that:
+
             - mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the
-            number of pairs of dead nodes between which the shortest path is
-            ell in the ith Monte Carlo run,
+              number of pairs of dead nodes between which the shortest path is
+              ell in the ith Monte Carlo run,
             - actual_res_i[ell]= 'number of pairs of dead nodes between which
-            the shortest path is ell in actual LFN'
+              the shortest path is ell in actual LFN'
+
         - ell_values: list of ell values for which we want to generate box plots
         - fig_dir: directory where figures are stored
         - cal_at: int saying which ell_value we will calibrate at
+
     Returns:
         - plot
+
     '''
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1) #first row, first column, one subplot
@@ -355,5 +366,33 @@ def CCDist(graph):
     ax.set_xlabel('Component Size')
     ax.set_ylabel('Frequency')
     plt.show()
+
+def MonteCarloBoxPlot(monte_carlo, actual, axes, info=None, xpos=1):
+    '''
+    Plot monte carlo results as box and whiskers plot with actual
+    result superimposed.
+
+    Args:
+        monte_carlo : list of scalars
+            List of the results of each monte carlo run
+        actual : scalar
+            Actual result.
+        info : string
+            Specifies what the plot is showing.
+        xpos : scalar
+            Specifies the position on the x-axis of the plot.
+
+    Returns:
+        Boxplot
+    '''
+    axes.boxplot( monte_carlo,
+                showcaps=False,
+                #boxprops=dict(facecolor = 'red', linewidth=0, alpha = 0.8),
+                medianprops=dict(color='w'),
+                showfliers=False,
+                whiskerprops=dict(color='k', alpha=0.5, linestyle='-'),
+                positions=[xpos]
+                )
+    axes.scatter([xpos], [actual], color='gray', marker = 'D', s = 10, linewidth=2,)
 
 #end--

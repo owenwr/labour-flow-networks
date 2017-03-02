@@ -1,4 +1,4 @@
-test_environment module
+Environment Test
 =======================
 
 .. automodule:: test_environment

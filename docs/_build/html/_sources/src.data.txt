@@ -1,10 +1,7 @@
-src.data package
+data package
 ================
 
-Submodules
-----------
-
-src.data.make_dataset module
+make_dataset module
 ----------------------------
 
 .. automodule:: src.data.make_dataset
@@ -12,7 +9,7 @@ src.data.make_dataset module
     :undoc-members:
     :show-inheritance:
 
-src.data.make_dataset_classes module
+make_dataset_classes module
 ------------------------------------
 
 .. automodule:: src.data.make_dataset_classes
