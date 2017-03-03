@@ -1,9 +1,12 @@
 Getting started
 ===============
 
-This is where you describe how to get set up on a clean install, including the
-commands necessary to get the raw data (using the `sync_data_from_s3` command,
-for example), and then how to make the cleaned, final data sets.
+All code is Python 2.7; all Python package requirements are in requirements.txt.
+If you have pip, use command pip install -r requirements.txt from the command
+line while in the labour-flow-networks project root directory and most recent
+versions of all relevant packages will be installed automatically. If you don't
+have pip installed then google Anaconda Python and download the relevant
+Anaconda distribution for your operating system. This will give you pip.
 
 Filename Conventions
 ---------------------

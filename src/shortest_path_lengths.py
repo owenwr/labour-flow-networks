@@ -22,7 +22,7 @@ import pandas as pd
 import tqdm #package for monitoring the progress of for loops with a progresbar
 import random
 import pickle as pkl
-import data.make_dataset as dat
+import data.make_dataset_classes as dat
 import general as gen #a miscellanious set of functions
 
 import Cython
@@ -42,15 +42,20 @@ def SHPToArray(shp_dictofdicts):
     numbers and tuple mapping row numbers to firm IDs.
 
     Args:
-        - shp_dictofdicts: dictionary of dictionaries such that d[i][j] is the
-          shortest path length between firms i and j.
-    Outputs:
-        - shp_array: array such that a[i][j] is the shortest path length between
-          firms i and j.
-        - row_to_id: tuple such that row_to_id[i] gives the firm ID that row i
-          in shp_array corresponds to
-        - id_to_row: dictionary such that id_to_row[i] gives the row in
-          shp_array that ID i maps to.
+        - shp_dictofdicts : dict
+            Dictionary of dictionaries such that d[i][j] is the shortest path
+            length between firms i and j.
+
+    Returns:
+        - shp_array: array
+            Array such that a[i][j] is the shortest path length between firms i
+            and j.
+        - row_to_id : tuple
+            Tuple such that row_to_id[i] gives the firm ID that row i in
+            shp_array corresponds to.
+        - id_to_row: dict
+            dictionary such that id_to_row[i] gives the row in shp_array that ID
+            i maps to.
 
     '''
     shp_df = pd.DataFrame(shp_dictofdicts)
@@ -88,6 +93,7 @@ def DeadRowsRand(number_dead, all_rows):
         - number_dead: number of rows we want to kill
         - all_rows: list of all the rows (which represent firms in the graph)
           in shp_array. This is equivalent to range(len(shp_array)).
+
     Returns:
         - array of number_dead dead rows from all_rows.
 
@@ -135,6 +141,7 @@ def DeadRowsPartialRand(
           in shp_array. This is equivalent to range(len(shp_array)).
         - graph: the relevant LFN
         - nrand: the number of dead firms chosen in an uncorrelated way.
+
     Returns:
         - array of number_dead dead rows from all_rows
     '''
@@ -247,19 +254,21 @@ def main(
         #==================================================================
         #---1. Create LFN based on a period of flows-----
         #==================================================================
-        g = dat.MakeLFN(flow_years, nflowrows)
+        lfn = dat.LFN(flow_years, nflow_rows=nflowrows)
 
         #==================================================================
         #---2. Determine dead firms based on a period of deaths.-----
         #==================================================================
-        dead_ids = dat.GetDeadIds(dat.deaths_filepath, death_years, ndeathrows)
+        dead_ids = dat.GetDeadIds(
+                        dat.deaths_filepath, death_years, ndeathrows
+                        )
         print('Number dead firms: ' + str(len(dead_ids)))
         #==================================================================
         #---3. Find the shortest path between each pair of nodes in the LFN.---
         #==================================================================
         #shp = SHortest Paths.
         #Transform datastructure to array
-        shp_dictofdicts = nx.all_pairs_shortest_path_length(g)
+        shp_dictofdicts = nx.all_pairs_shortest_path_length(lfn.graph)
         shp_array, row_to_id, id_to_row = SHPToArray(shp_dictofdicts)
 
         #==================================================================
@@ -314,8 +323,8 @@ def main(
 #================================================
 
 if __name__ == '__main__':
-    for d in ['1996-2006', '1996-2007', '1996-2008', '1996-2009', '1996-2010']:
-        main(flow_years='1996-1997', death_years=d, nflowrows=2,
+    for d in ['1996-2006']:
+        main(flow_years='1996-1997', death_years=d, nflowrows=200,
                 mc_runs=2, nrand=None, ndeathrows=None)
 
 #add info about number of deaths to filename

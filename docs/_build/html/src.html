@@ -322,19 +322,39 @@ mc_results[ell] = no. pairs of dead rows with ell in last MC run.</li>
 numbers and tuple mapping row numbers to firm IDs.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>shp_dictofdicts: dictionary of dictionaries such that d[i][j] is the
-shortest path length between firms i and j.</li>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>shp_dictofdicts</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd><p class="first last">Dictionary of dictionaries such that d[i][j] is the shortest path
+length between firms i and j.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
-<dt>Outputs:</dt>
-<dd><ul class="first last simple">
-<li>shp_array: array such that a[i][j] is the shortest path length between
-firms i and j.</li>
-<li>row_to_id: tuple such that row_to_id[i] gives the firm ID that row i
-in shp_array corresponds to</li>
-<li>id_to_row: dictionary such that id_to_row[i] gives the row in
-shp_array that ID i maps to.</li>
+<dt>Returns:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>shp_array: array</dt>
+<dd><p class="first last">Array such that a[i][j] is the shortest path length between firms i
+and j.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>row_to_id</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span><dd><p class="first last">Tuple such that row_to_id[i] gives the firm ID that row i in
+shp_array corresponds to.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>id_to_row: dict</dt>
+<dd><p class="first last">dictionary such that id_to_row[i] gives the row in shp_array that ID
+i maps to.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>

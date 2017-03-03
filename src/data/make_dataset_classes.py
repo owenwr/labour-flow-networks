@@ -1,8 +1,6 @@
 '''
 Functions for retrieving and doing basic manipulation of data to yield LFNs
-and sets of dead firm ids.
-
-LFN (Labour Flow Network) class definition with several methods.
+and sets of dead firm ids. Includes class definition of LFN objects.
 '''
 
 import os
@@ -29,7 +27,7 @@ def StrFromYrs(year1, year2):
 
 def FlowsPath(years, project_root=project_root):
     '''
-    Generates filepath for flows.
+    Generates filepath for flows in accordance with my filename conventions.
 
     Args:
         - years: flow years to be used, in form 'year1-year2'
