@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Visualisation package &mdash; labour-flow-networks 0.1 documentation</title>
+    <title>Visualisation package &#8212; labour-flow-networks 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="labour-flow-networks 0.1 documentation" href="index.html" />
     <link rel="up" title="src" href="src.html" />
-    <link rel="next" title="Environment Test" href="test_environment.html" />
+    <link rel="next" title="shortest_path_lengths module" href="src.shortest_path_lengths.html" />
     <link rel="prev" title="data package" href="src.data.html" /> 
   </head>
   <body role="document">
@@ -39,14 +39,13 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="test_environment.html" title="Environment Test"
+          <a href="src.shortest_path_lengths.html" title="shortest_path_lengths module"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="src.data.html" title="data package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >labour-flow-networks</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="src.html" accesskey="U">src</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="src.html" accesskey="U">src</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -55,8 +54,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="visualisation-package">
-<h1>Visualisation package<a class="headerlink" href="#visualisation-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-src.visualisation">
+<span id="visualisation-package"></span><h1>Visualisation package<a class="headerlink" href="#module-src.visualisation" title="Permalink to this headline">¶</a></h1>
+<p>Package includes general functions for visualising results and data.</p>
 <div class="section" id="module-src.visualisation.visualise">
 <span id="visualise-module"></span><h2>Visualise module<a class="headerlink" href="#module-src.visualisation.visualise" title="Permalink to this headline">¶</a></h2>
 <p>Functions for visualising shortest paths data.</p>
@@ -93,13 +93,62 @@ data</li>
 
 <dl class="function">
 <dt id="src.visualisation.visualise.CCDist">
-<code class="descclassname">src.visualisation.visualise.</code><code class="descname">CCDist</code><span class="sig-paren">(</span><em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.CCDist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">CCDist</code><span class="sig-paren">(</span><em>graph</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.CCDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of the distribution of connected component subgraph sizes from
+a NetworkX graph.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last">
+<li><p class="first">graph : NetworkX graph</p>
+</li>
+<li><dl class="first docutils">
+<dt>output_filepath</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd><p class="first last">If an output filepath is provided then the plot is saved to that
+location.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>Pyplot plot.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="src.visualisation.visualise.DegreeDist">
-<code class="descclassname">src.visualisation.visualise.</code><code class="descname">DegreeDist</code><span class="sig-paren">(</span><em>graph</em>, <em>loglog=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.DegreeDist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">src.visualisation.visualise.</code><code class="descname">DegreeDist</code><span class="sig-paren">(</span><em>graph</em>, <em>loglog=True</em>, <em>output_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualisation.visualise.DegreeDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of the degree distribution of a NetworkX graph.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last">
+<li><p class="first">graph : NetworkX graph</p>
+</li>
+<li><dl class="first docutils">
+<dt>loglog</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd><p class="first last">Set axes scales to be logarithmic.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>output_filepath</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd><p class="first last">If an output filepath is provided then the plot is saved to that
+location.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>Pyplot plot.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="src.visualisation.visualise.GetRatios">
@@ -155,10 +204,9 @@ result superimposed.</p>
 result of the number of pairs of firms with each ell value.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><ul class="first simple">
-<li>data_list: list of tuples of filepaths in format</li>
-</ul>
-<p>[(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
+<dd><ul class="first last">
+<li><p class="first">data_list: list of tuples of filepaths in format
+[(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
 are for pickle files that contain the dictionaries with keys as ell
 values such that:</p>
 <blockquote>
@@ -170,9 +218,11 @@ ell in the ith Monte Carlo run,</li>
 the shortest path is ell in actual LFN&#8217;</li>
 </ul>
 </div></blockquote>
-<ul class="last simple">
-<li>ell_values: list of ell values for which we want to generate bars</li>
-<li>fig_dir: directory where figures are stored</li>
+</li>
+<li><p class="first">ell_values: list of ell values for which we want to generate bars</p>
+</li>
+<li><p class="first">fig_dir: directory where figures are stored</p>
+</li>
 </ul>
 </dd>
 </dl>
@@ -222,9 +272,6 @@ the shortest path is ell in actual LFN&#8217;</li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-src.visualisation">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.visualisation" title="Permalink to this headline">¶</a></h2>
-</div>
 </div>
 
 
@@ -237,7 +284,6 @@ the shortest path is ell in actual LFN&#8217;</li>
   <ul>
 <li><a class="reference internal" href="#">Visualisation package</a><ul>
 <li><a class="reference internal" href="#module-src.visualisation.visualise">Visualise module</a></li>
-<li><a class="reference internal" href="#module-src.visualisation">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -246,8 +292,8 @@ the shortest path is ell in actual LFN&#8217;</li>
   <p class="topless"><a href="src.data.html"
                         title="previous chapter">data package</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="test_environment.html"
-                        title="next chapter">Environment Test</a></p>
+  <p class="topless"><a href="src.shortest_path_lengths.html"
+                        title="next chapter">shortest_path_lengths module</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -258,8 +304,8 @@ the shortest path is ell in actual LFN&#8217;</li>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -279,19 +325,18 @@ the shortest path is ell in actual LFN&#8217;</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="test_environment.html" title="Environment Test"
+          <a href="src.shortest_path_lengths.html" title="shortest_path_lengths module"
              >next</a> |</li>
         <li class="right" >
           <a href="src.data.html" title="data package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >labour-flow-networks</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="src.html" >src</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="src.html" >src</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright .
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

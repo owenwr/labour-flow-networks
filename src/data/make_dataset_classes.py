@@ -4,11 +4,16 @@ and sets of dead firm ids. Includes class definition of LFN objects.
 '''
 
 import os
+import sys
+project_root = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+sys.path.append(project_root)
+
 import pandas as pd
 import numpy as np
 import networkx as nx
+from src.visualisation import visualise as vis
 
-project_root = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+
 
 def YrsFromStr(years):
     '''
@@ -331,6 +336,28 @@ class LFN:
         #print info
         if show_info == True:
             self.PrintInfo()
+
+    def DegreeDist(self, loglog=True, output_filepath=None):
+        '''
+        Plot degree distribution for LFN.
+
+        If output_filepath specified then image is saved, otherwise it is shown
+        immediately.
+        '''
+        vis.DegreeDist(self.graph, loglog, output_filepath)
+
+    def CCDist(self, output_filepath=None):
+        '''
+        Plot distribution of sizes of connected component subgraphs of LFN.
+
+        If output_filepath specified then image is saved, otherwise it is shown
+        immediately.
+
+        A break in the x-axis is necessary due the existence of a giant
+        connected component (this is the case in all typical LFNs I have
+        analysed so far).
+        '''
+        vis.CCDist(self.graph, output_filepath)
 
     def CheckConsistency(self):
         '''

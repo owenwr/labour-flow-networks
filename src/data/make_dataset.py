@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
+**Mostly Deprecated** : use make_dataset_classes.py module instead.
+
 Functions to manipulate raw data.
 
 Merge two flow files to produce a flow file for multiple years.

@@ -1,10 +1,7 @@
 data package
 ================
 
-make_dataset module
-----------------------------
-
-.. automodule:: src.data.make_dataset
+.. automodule:: src.data
     :members:
     :undoc-members:
     :show-inheritance:
@@ -16,12 +13,11 @@ make_dataset_classes module
     :members:
     :undoc-members:
     :show-inheritance:
+    
+make_dataset module
+----------------------------
 
-
-Module contents
----------------
-
-.. automodule:: src.data
+.. automodule:: src.data.make_dataset
     :members:
     :undoc-members:
     :show-inheritance:

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>data package &mdash; labour-flow-networks 0.1 documentation</title>
+    <title>data package &#8212; labour-flow-networks 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -44,8 +44,8 @@
         <li class="right" >
           <a href="src.html" title="src"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="src.html" accesskey="U">src</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="src.html" accesskey="U">src</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -54,117 +54,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="data-package">
-<h1>data package<a class="headerlink" href="#data-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-src.data.make_dataset">
-<span id="make-dataset-module"></span><h2>make_dataset module<a class="headerlink" href="#module-src.data.make_dataset" title="Permalink to this headline">¶</a></h2>
-<p>Functions to manipulate raw data.</p>
-<p>Merge two flow files to produce a flow file for multiple years.</p>
-<dl class="function">
-<dt id="src.data.make_dataset.DeadInLFN">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">DeadInLFN</code><span class="sig-paren">(</span><em>graph</em>, <em>dead_ids</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.DeadInLFN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get set of firms ids that are both dead and in the LFN.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.data.make_dataset.FlowsPath">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">FlowsPath</code><span class="sig-paren">(</span><em>years</em>, <em>project_root='/Users/Owen/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../..'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.FlowsPath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates filepath for flows.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>years: flow years to be used, in form &#8216;year1-year2&#8217;</li>
-<li>project_root</li>
-</ul>
-</dd>
-<dt>Returns:</dt>
-<dd><ul class="first last simple">
-<li>Flows filepath.</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.data.make_dataset.GetDeadIds">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">GetDeadIds</code><span class="sig-paren">(</span><em>input_filepath='/Users/Owen/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../../data/raw/16-12-2016-Mega/dates_death.csv'</em>, <em>death_years='all'</em>, <em>nrows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.GetDeadIds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get firms that died in one of the years in death_years.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>input_filepath: filepath of dates_deat.csv with column format
-firm_id, year.</li>
-<li>death_years: range of years we wish deaths in with format
-&#8216;startyr-endyr&#8217;, or &#8216;all&#8217; for all deaths. Deaths in the start year are
-included, deaths in the end year are not, so to get deaths in 2009
-require &#8216;1996-2010&#8217;.</li>
-</ul>
-</dd>
-<dt>Output:</dt>
-<dd><ul class="first last simple">
-<li>set : ids of firms that died in the specified period (or all firms
-that died).</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.data.make_dataset.MakeFlowsDF">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">MakeFlowsDF</code><span class="sig-paren">(</span><em>flow_years</em>, <em>nrows=None</em>, <em>manual_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.MakeFlowsDF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates a new list of flows from two lists of flows.</p>
-<ol class="arabic simple">
-<li>Check to see if flow file already exists</li>
-<li>If it doesn&#8217;t exist then create it from raw data files (might be quicker
-to do creation by pre-existing merged files but that would make the code
-harder...)</li>
-</ol>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.data.make_dataset.MakeLFN">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">MakeLFN</code><span class="sig-paren">(</span><em>flow_years</em>, <em>nrows=None</em>, <em>manual_filepath=None</em>, <em>print_info=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.MakeLFN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make Labour Flow Network where one job change is sufficient for a link.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last">
-<li><p class="first">input_filepath: text file with col format
-firm1_ID, firm2_ID, number</p>
-</li>
-<li><dl class="first docutils">
-<dt>nrows: option to restrict the number of rows of flows read in.</dt>
-<dd><p class="first last">this allows for the creation of a smaller graph for testing.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-<dt>returns:</dt>
-<dd><ul class="first last simple">
-<li>networkx graph</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.data.make_dataset.StrFromYrs">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">StrFromYrs</code><span class="sig-paren">(</span><em>year1</em>, <em>year2</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.StrFromYrs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create string in format &#8216;year1-year2&#8217; from integers year1, year2</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.data.make_dataset.YrsFromStr">
-<code class="descclassname">src.data.make_dataset.</code><code class="descname">YrsFromStr</code><span class="sig-paren">(</span><em>years</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.YrsFromStr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take string in format &#8216;year1-year2&#8217; and return integers year1, year2</p>
-</dd></dl>
-
-</div>
+  <div class="section" id="module-src.data">
+<span id="data-package"></span><h1>data package<a class="headerlink" href="#module-src.data" title="Permalink to this headline">¶</a></h1>
+<p>Package containing functions and classes for manipulating basic data into usable
+forms.</p>
 <div class="section" id="module-src.data.make_dataset_classes">
 <span id="make-dataset-classes-module"></span><h2>make_dataset_classes module<a class="headerlink" href="#module-src.data.make_dataset_classes" title="Permalink to this headline">¶</a></h2>
 <p>Functions for retrieving and doing basic manipulation of data to yield LFNs
-and sets of dead firm ids.</p>
-<p>LFN (Labour Flow Network) class definition with several methods.</p>
+and sets of dead firm ids. Includes class definition of LFN objects.</p>
 <dl class="function">
 <dt id="src.data.make_dataset_classes.DeadInLFN">
 <code class="descclassname">src.data.make_dataset_classes.</code><code class="descname">DeadInLFN</code><span class="sig-paren">(</span><em>graph</em>, <em>dead_ids</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.DeadInLFN" title="Permalink to this definition">¶</a></dt>
@@ -173,8 +70,8 @@ and sets of dead firm ids.</p>
 
 <dl class="function">
 <dt id="src.data.make_dataset_classes.FlowsPath">
-<code class="descclassname">src.data.make_dataset_classes.</code><code class="descname">FlowsPath</code><span class="sig-paren">(</span><em>years</em>, <em>project_root='/Users/Owen/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../..'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.FlowsPath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates filepath for flows.</p>
+<code class="descclassname">src.data.make_dataset_classes.</code><code class="descname">FlowsPath</code><span class="sig-paren">(</span><em>years</em>, <em>project_root='/Users/student/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../..'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.FlowsPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates filepath for flows in accordance with my filename conventions.</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><ul class="first last simple">
@@ -192,7 +89,7 @@ and sets of dead firm ids.</p>
 
 <dl class="function">
 <dt id="src.data.make_dataset_classes.GetDeadIds">
-<code class="descclassname">src.data.make_dataset_classes.</code><code class="descname">GetDeadIds</code><span class="sig-paren">(</span><em>input_filepath='/Users/Owen/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../../data/raw/16-12-2016-Mega/dates_death.csv'</em>, <em>death_years='all'</em>, <em>nrows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.GetDeadIds" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">src.data.make_dataset_classes.</code><code class="descname">GetDeadIds</code><span class="sig-paren">(</span><em>input_filepath='/Users/student/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../../data/raw/16-12-2016-Mega/dates_death.csv'</em>, <em>death_years='all'</em>, <em>nrows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.GetDeadIds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get firms that died in one of the years in death_years.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -309,9 +206,28 @@ following two cases:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="src.data.make_dataset_classes.LFN.CCDist">
+<code class="descname">CCDist</code><span class="sig-paren">(</span><em>output_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.LFN.CCDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot distribution of sizes of connected component subgraphs of LFN.</p>
+<p>If output_filepath specified then image is saved, otherwise it is shown
+immediately.</p>
+<p>A break in the x-axis is necessary due the existence of a giant
+connected component (this is the case in all typical LFNs I have
+analysed so far).</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="src.data.make_dataset_classes.LFN.CheckConsistency">
 <code class="descname">CheckConsistency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.LFN.CheckConsistency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check the consistency of various LFN features.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.data.make_dataset_classes.LFN.DegreeDist">
+<code class="descname">DegreeDist</code><span class="sig-paren">(</span><em>loglog=True</em>, <em>output_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset_classes.LFN.DegreeDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot degree distribution for LFN.</p>
+<p>If output_filepath specified then image is saved, otherwise it is shown
+immediately.</p>
 </dd></dl>
 
 <dl class="method">
@@ -402,8 +318,110 @@ harder...)</li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-src.data">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-src.data.make_dataset">
+<span id="make-dataset-module"></span><h2>make_dataset module<a class="headerlink" href="#module-src.data.make_dataset" title="Permalink to this headline">¶</a></h2>
+<p><strong>Mostly Deprecated</strong> : use make_dataset_classes.py module instead.</p>
+<p>Functions to manipulate raw data.</p>
+<p>Merge two flow files to produce a flow file for multiple years.</p>
+<dl class="function">
+<dt id="src.data.make_dataset.DeadInLFN">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">DeadInLFN</code><span class="sig-paren">(</span><em>graph</em>, <em>dead_ids</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.DeadInLFN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get set of firms ids that are both dead and in the LFN.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.data.make_dataset.FlowsPath">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">FlowsPath</code><span class="sig-paren">(</span><em>years</em>, <em>project_root='/Users/student/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../..'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.FlowsPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates filepath for flows.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>years: flow years to be used, in form &#8216;year1-year2&#8217;</li>
+<li>project_root</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>Flows filepath.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.data.make_dataset.GetDeadIds">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">GetDeadIds</code><span class="sig-paren">(</span><em>input_filepath='/Users/student/Dropbox/Mason/Mason_LFN/labour-flow-networks/docs/../src/data/../../data/raw/16-12-2016-Mega/dates_death.csv'</em>, <em>death_years='all'</em>, <em>nrows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.GetDeadIds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get firms that died in one of the years in death_years.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>input_filepath: filepath of dates_deat.csv with column format
+firm_id, year.</li>
+<li>death_years: range of years we wish deaths in with format
+&#8216;startyr-endyr&#8217;, or &#8216;all&#8217; for all deaths. Deaths in the start year are
+included, deaths in the end year are not, so to get deaths in 2009
+require &#8216;1996-2010&#8217;.</li>
+</ul>
+</dd>
+<dt>Output:</dt>
+<dd><ul class="first last simple">
+<li>set : ids of firms that died in the specified period (or all firms
+that died).</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.data.make_dataset.MakeFlowsDF">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">MakeFlowsDF</code><span class="sig-paren">(</span><em>flow_years</em>, <em>nrows=None</em>, <em>manual_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.MakeFlowsDF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a new list of flows from two lists of flows.</p>
+<ol class="arabic simple">
+<li>Check to see if flow file already exists</li>
+<li>If it doesn&#8217;t exist then create it from raw data files (might be quicker
+to do creation by pre-existing merged files but that would make the code
+harder...)</li>
+</ol>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.data.make_dataset.MakeLFN">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">MakeLFN</code><span class="sig-paren">(</span><em>flow_years</em>, <em>nrows=None</em>, <em>manual_filepath=None</em>, <em>print_info=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.MakeLFN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make Labour Flow Network where one job change is sufficient for a link.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last">
+<li><p class="first">input_filepath: text file with col format
+firm1_ID, firm2_ID, number</p>
+</li>
+<li><dl class="first docutils">
+<dt>nrows: option to restrict the number of rows of flows read in.</dt>
+<dd><p class="first last">this allows for the creation of a smaller graph for testing.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>returns:</dt>
+<dd><ul class="first last simple">
+<li>networkx graph</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.data.make_dataset.StrFromYrs">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">StrFromYrs</code><span class="sig-paren">(</span><em>year1</em>, <em>year2</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.StrFromYrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create string in format &#8216;year1-year2&#8217; from integers year1, year2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.data.make_dataset.YrsFromStr">
+<code class="descclassname">src.data.make_dataset.</code><code class="descname">YrsFromStr</code><span class="sig-paren">(</span><em>years</em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.make_dataset.YrsFromStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take string in format &#8216;year1-year2&#8217; and return integers year1, year2</p>
+</dd></dl>
+
 </div>
 </div>
 
@@ -416,9 +434,8 @@ harder...)</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">data package</a><ul>
-<li><a class="reference internal" href="#module-src.data.make_dataset">make_dataset module</a></li>
 <li><a class="reference internal" href="#module-src.data.make_dataset_classes">make_dataset_classes module</a></li>
-<li><a class="reference internal" href="#module-src.data">Module contents</a></li>
+<li><a class="reference internal" href="#module-src.data.make_dataset">make_dataset module</a></li>
 </ul>
 </li>
 </ul>
@@ -439,8 +456,8 @@ harder...)</li>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -465,13 +482,13 @@ harder...)</li>
         <li class="right" >
           <a href="src.html" title="src"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="src.html" >src</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="src.html" >src</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright .
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

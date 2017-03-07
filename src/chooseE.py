@@ -1,5 +1,10 @@
 '''
-(based on the script shortest_path_lengths.py)
+Script to find nrand, a parameter to be used in the script
+shortest_path_lengths.py which specifies the number of nodes to be chosen at
+random in the Monte Carlo Simulation.
+
+Details
+*******
 
 Chooses different values of nrand (see DeadRowsPartialRand in the
 shortest_path_lengths.py file) and generates a set of dead firms using
@@ -11,6 +16,8 @@ dead firms, not (partially) randomly selected ones)) is denoted E.
 The aim is to find the value of nrand that reproduces e=E. Or at least a value
 of nrand that gets close to e=E.
 
+The method is as follows:
+
 1. Make LFN, get actual dead firms
 2. Get actual number of dead first neighbours, E
 3. Try different values of nrand and find e.
@@ -18,7 +25,6 @@ of nrand that gets close to e=E.
     (a) Choose these values in the interval [1, N-E]. The upper limit here is
         because (assuming the average degree is greater than 1) after we choose
         nrand=N-E firms then there should be at least E pairs of first neighbours.
-
 4. Plot e vs nrand
 
     (a) By eye pick a value of nrand that generates and e close to E

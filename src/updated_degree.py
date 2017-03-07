@@ -1,5 +1,5 @@
 '''
-Look at the effect of updated degree on death.
+Examine the effect of updated degree on death.
 '''
 
 import os
@@ -31,7 +31,14 @@ def PropDead(all_count, dead_count):
 
 def UpdatedDegreeRun(year1, yearend, lfn, mc=False, add_flows=True):
     '''
-    Find proportion of nodes with each updated degree that die in each
+    Find proportion of nodes with each updated degree that die in each time
+    interval.
+
+    **Warning** : I think there are problems if you pick arbitrary year1 and
+    yearend. This works if year1 is also the first year of flow data that the
+    lfn is based on. To make it work for arbitrary year1 it would require some
+    tweaking. For anyone using this function I would probably suggest writing
+    a new one (or properly understanding and fixing this one).
 
     Carry out one run to get updated degrees of all dead nodes and
     all nodes. Updated degree is degree of node in LFN minus the number
@@ -79,6 +86,7 @@ def UpdatedDegreeRun(year1, yearend, lfn, mc=False, add_flows=True):
         These lists can be used to find, eg, the proportion of all firms with a
         given updated degree that died.
     '''
+    print('Read Warning in DocString of Function.')
     lfn.AllAlive()
     results = dict()
     for year in tqdm.tqdm(range(year1, yearend)):

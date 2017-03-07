@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>src &mdash; labour-flow-networks 0.1 documentation</title>
+    <title>src &#8212; labour-flow-networks 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="commands.html" title="Commands"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -52,529 +52,45 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="src">
-<h1>src<a class="headerlink" href="#src" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="module-src">
+<span id="src"></span><h1>src<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h1>
+<p>Module containing all LFN scripts and modules.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="src.data.html">data package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="src.data.html#module-src.data.make_dataset">make_dataset module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.data.html#module-src.data.make_dataset_classes">make_dataset_classes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.data.html#module-src.data">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.data.html#module-src.data.make_dataset">make_dataset module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.visualisation.html">Visualisation package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.visualisation.html#module-src.visualisation.visualise">Visualise module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.visualisation.html#module-src.visualisation">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.shortest_path_lengths.html">shortest_path_lengths module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.shortest_path_lengths.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.shortest_path_lengths.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.shortest_path_lengths.html#details">Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.shortest_path_lengths.html#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.shortest_path_lengths.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.make_shortest_path_lengths_figures.html">make_shortest_path_length_figures module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.make_shortest_path_lengths_figures.html#inputs">Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.make_shortest_path_lengths_figures.html#outputs">Outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.C_shortest_path_lengths.html">C_shortest_path_lengths module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.setup.html">setup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.general.html">general module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.updated_degree.html">updated_degree module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.updated_degree_flows.html">updated_deg_flows module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.summary_stats_plots.html">summary_stats_plots module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.what_affects_death.html">what_affects_death module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.chooseE.html">chooseE module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.chooseE.html#details">Details</a></li>
 </ul>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="c-shortest-path-lengths-module">
-<h2>C_shortest_path_lengths module<a class="headerlink" href="#c-shortest-path-lengths-module" title="Permalink to this headline">¶</a></h2>
-<p>Can&#8217;t use automodule since it doesn&#8217;t like the way I do the pyxinstall.</p>
-</div>
-<div class="section" id="module-src.chooseE">
-<span id="choosee-module"></span><h2>chooseE module<a class="headerlink" href="#module-src.chooseE" title="Permalink to this headline">¶</a></h2>
-<p>(based on the script shortest_path_lengths.py)</p>
-<p>Chooses different values of nrand (see DeadRowsPartialRand in the
-shortest_path_lengths.py file) and generates a set of dead firms using
-DeadRowsPartialRand. The number of dead first neighbours, e, is the number of
-pairs of firms that are in this set of dead firms and are connected by an edge
-in the LFN. The actual number of dead first neighbours (ie, using the actual
-dead firms, not (partially) randomly selected ones)) is denoted E.</p>
-<p>The aim is to find the value of nrand that reproduces e=E. Or at least a value
-of nrand that gets close to e=E.</p>
-<ol class="arabic">
-<li><p class="first">Make LFN, get actual dead firms</p>
-</li>
-<li><p class="first">Get actual number of dead first neighbours, E</p>
-</li>
-<li><p class="first">Try different values of nrand and find e.</p>
-<blockquote>
-<div><ol class="loweralpha simple">
-<li>Choose these values in the interval [1, N-E]. The upper limit here is
-because (assuming the average degree is greater than 1) after we choose
-nrand=N-E firms then there should be at least E pairs of first neighbours.</li>
-</ol>
-</div></blockquote>
-</li>
-<li><p class="first">Plot e vs nrand</p>
-<blockquote>
-<div><ol class="loweralpha simple">
-<li>By eye pick a value of nrand that generates and e close to E</li>
-</ol>
-</div></blockquote>
-</li>
-</ol>
-<p>n.b. there is an element of randomness: every partially random selection is just
-that - random. Therefore we have to be wary of the statistics. However, if we
-get a smooth curve for e vs nrand then that suggests that we have successfully
-washed out the statistics.</p>
-<dl class="function">
-<dt id="src.chooseE.main">
-<code class="descclassname">src.chooseE.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.chooseE.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-src.general">
-<span id="general-module"></span><h2>general module<a class="headerlink" href="#module-src.general" title="Permalink to this headline">¶</a></h2>
-<p>General functions for LFN project.</p>
-<dl class="function">
-<dt id="src.general.CheckExistence">
-<code class="descclassname">src.general.</code><code class="descname">CheckExistence</code><span class="sig-paren">(</span><em>filepath</em>, <em>allow_overwrite=False</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.CheckExistence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="src.general.CheckSameData">
-<code class="descclassname">src.general.</code><code class="descname">CheckSameData</code><span class="sig-paren">(</span><em>filename1</em>, <em>filename2</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.CheckSameData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks that the two filnames inputted correspond to LFNs built from the
-same years of flows and the same firm deaths.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.general.GetDeathYears">
-<code class="descclassname">src.general.</code><code class="descname">GetDeathYears</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.GetDeathYears" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the 9 characters after the word &#8216;deaths&#8217; or gets &#8216;all&#8217; if all.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.general.GetFlowYears">
-<code class="descclassname">src.general.</code><code class="descname">GetFlowYears</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.GetFlowYears" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the 9 characters after the word &#8216;flows&#8217;, by my convention these
-are the flow years</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.general.GetNrand">
-<code class="descclassname">src.general.</code><code class="descname">GetNrand</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.GetNrand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the 4 characters after the word &#8216;nrand&#8217;, by my convention this
-is the number of dead firms chosen completely at random in the Monte Carlo.
-If there is no nrand return an empty string.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.general.GetPkl">
-<code class="descclassname">src.general.</code><code class="descname">GetPkl</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.GetPkl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="src.general.SavePkl">
-<code class="descclassname">src.general.</code><code class="descname">SavePkl</code><span class="sig-paren">(</span><em>obj</em>, <em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#src.general.SavePkl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-src.make_figures">
-<span id="make-figures-module"></span><h2>make_figures module<a class="headerlink" href="#module-src.make_figures" title="Permalink to this headline">¶</a></h2>
-<p>Visually compare the number of pairs of dead nodes with shortest path length
-ell with the results of a Monte Carlo Simulation in which dead nodes are chosen
-at random.</p>
-<p>For each ell value generate a histogram for the number of Monte Carlo runs
-that produced x pairs of dead nodes with ell.</p>
-<ol class="arabic" start="0">
-<li><dl class="first docutils">
-<dt>Get input and output filepaths.</dt>
-<dd><ul class="first last">
-<li><dl class="first docutils">
-<dt>inputs are results dictionaries (both actual results and Monte Carlo</dt>
-<dd><p class="first last">results dictionary).</p>
-</dd>
-</dl>
-</li>
-<li><p class="first">outputs are figures</p>
-</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p class="first">Generate plots</p>
-</li>
-</ol>
-<dl class="function">
-<dt id="src.make_figures.main">
-<code class="descclassname">src.make_figures.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.make_figures.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-src.setup">
-<span id="setup-module"></span><h2>setup module<a class="headerlink" href="#module-src.setup" title="Permalink to this headline">¶</a></h2>
-<p>Setup script for compiling Cython code.</p>
-<p>I usually use pyxinstall to automate the compiling process rather than running
-this script. Mainly because there seems to be a bug with Mac Python that means
-it all gets confused with the numpy import.</p>
-<dl class="function">
-<dt id="src.setup.main">
-<code class="descclassname">src.setup.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.setup.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-src.shortest_path_lengths">
-<span id="shortest-path-lengths-module"></span><h2>shortest_path_lengths module<a class="headerlink" href="#module-src.shortest_path_lengths" title="Permalink to this headline">¶</a></h2>
-<p>Script to get shortest path lengths (what I call ell values) between pairs
-of dead nodes in a Labour Flow Network. Both the nodes that actually die and
-a Monte Carlo, where dead nodes are chosen at random, are produced.</p>
-<ol class="arabic simple">
-<li>Create LFN based on a period of flows.</li>
-<li>Determine dead firms based on a period of deaths.</li>
-<li>Find the shortest path between each pair of nodes in the LFN.</li>
-<li>Find shortest path length between each pair of dead firms.</li>
-<li>Compare ell values for the acutal dead firms with a Monte Carlo Simulation
-where dead firms are picked at random (but the total number dead is fixed).</li>
-</ol>
-<dl class="function">
-<dt id="src.shortest_path_lengths.DeadFirstNeighs">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadFirstNeighs</code><span class="sig-paren">(</span><em>graph</em>, <em>dead_ids</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.DeadFirstNeighs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get E (the number of edges that connect dead firms in the actual data).</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.shortest_path_lengths.DeadRows">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadRows</code><span class="sig-paren">(</span><em>dead_ids</em>, <em>id_to_row</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.DeadRows" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take IDs of dead firms and return array of rows of shp_array that are dead</p>
-<p>&#8211;Note that firm ids for firms that are not in the LFN are discarded&#8211;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.shortest_path_lengths.DeadRowsPartialRand">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadRowsPartialRand</code><span class="sig-paren">(</span><em>number_dead</em>, <em>all_rows</em>, <em>graph</em>, <em>nrand</em>, <em>row_to_id</em>, <em>id_to_row</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.DeadRowsPartialRand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a partially random selection of n=number_dead dead rows from the
-shortest_paths array.</p>
-<p>We choose nrand firms from the network at random and kill them. All the
-neighbours of these dead firms are found and nrand_neighs = number_dead -
-nrand of these firms are killed. By choosing the firms partially at random
-in this way we hope to reproduce results that look more like the actual
-pattern of dead firms than when a Monte Carlo with completely random firm
-deaths is used. If we are right about this then it suggests that the real
-driving mechanism for the pattern observed is ell=1 being high (ie
-neighbouring firms dying together), and the effects at higher ell-values
-result from this.</p>
-<p>As a first approximation nrand = number_dead - E where E is the number of
-first neighbour edges in the real pattern of dead firms (ie the number of
-edges connecting actually dead firms in the LFN). After using this nrand the
-resulting number of first neighbour edges in the randomly selected dead
-firms is found, I call this e. If e &gt; E (which is to be expected), then a
-lower value for nrand is chosen. The method for this calibration is discussed
-below.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>number_dead: number of rows we want to kill</li>
-<li>all_rows: list of all the rows (which represent firms in the graph)
-in shp_array. This is equivalent to range(len(shp_array)).</li>
-<li>graph: the relevant LFN</li>
-<li>nrand: the number of dead firms chosen in an uncorrelated way.</li>
-</ul>
-</dd>
-<dt>Returns:</dt>
-<dd><ul class="first last simple">
-<li>array of number_dead dead rows from all_rows</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.shortest_path_lengths.DeadRowsRand">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadRowsRand</code><span class="sig-paren">(</span><em>number_dead</em>, <em>all_rows</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.DeadRowsRand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a random selection of n=number_dead dead rows from the shortest paths
-array.</p>
-<p>Note that all_rows is a mutable type and is passed by value so this function
-changes it, that doesn&#8217;t matter though - it&#8217;s just shuffling the order.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>number_dead: number of rows we want to kill</li>
-<li>all_rows: list of all the rows (which represent firms in the graph)
-in shp_array. This is equivalent to range(len(shp_array)).</li>
-</ul>
-</dd>
-<dt>Returns:</dt>
-<dd><ul class="first last simple">
-<li>array of number_dead dead rows from all_rows.</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.shortest_path_lengths.MCAddRun">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">MCAddRun</code><span class="sig-paren">(</span><em>mc_results</em>, <em>mc_results_single</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.MCAddRun" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the mc_results variable with the results of a Monte Carlo run.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>mc_results: stores all Monte Carlo results,
-mc_results[ell] = [no. pairs with ell in run 1, no. pairs with ell in
-run 2, ...]</li>
-<li>mc_results_single: results of a single Monte Carlo Run, ie,
-mc_results[ell] = no. pairs of dead rows with ell in last MC run.</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.shortest_path_lengths.SHPToArray">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">SHPToArray</code><span class="sig-paren">(</span><em>shp_dictofdicts</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.SHPToArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform dict of dicts to array plus dictionay mapping firm IDs to row
-numbers and tuple mapping row numbers to firm IDs.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last">
-<li><dl class="first docutils">
-<dt>shp_dictofdicts</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd><p class="first last">Dictionary of dictionaries such that d[i][j] is the shortest path
-length between firms i and j.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li><dl class="first docutils">
-<dt>shp_array: array</dt>
-<dd><p class="first last">Array such that a[i][j] is the shortest path length between firms i
-and j.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>row_to_id</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span><dd><p class="first last">Tuple such that row_to_id[i] gives the firm ID that row i in
-shp_array corresponds to.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>id_to_row: dict</dt>
-<dd><p class="first last">dictionary such that id_to_row[i] gives the row in shp_array that ID
-i maps to.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.shortest_path_lengths.main">
-<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">main</code><span class="sig-paren">(</span><em>flow_years</em>, <em>death_years='all'</em>, <em>nflowrows=None</em>, <em>ndeathrows=None</em>, <em>test=False</em>, <em>mc_runs=0</em>, <em>mc_force_number_dead='no'</em>, <em>nrand=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.shortest_path_lengths.main" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>flow_years: format &#8216;year1-year2&#8217;. The LFN will be created from
-flows in this time period.</li>
-<li>death_years: &#8216;all&#8217; or &#8216;starty-endyr&#8217;. If &#8216;all&#8217; then all firm
-deaths will be considered, if string in form stated is provided
-then only deaths in the specified years are considered.</li>
-<li>nflowrows: can be used to resrict the number of lines of the flow
-file that are read. This speeds things up (since the resulting LFN
-is smaller).</li>
-<li>ndeathrows: can be used to restrict the number of lines of the
-death file that are read.</li>
-<li>mc_runs: the number of Monte Carlo runs to be completed.</li>
-<li>mc_force_number_dead: default for number of dead firms in the
-Monte Carlo is the number that actuall died in the period.
-However, with this input you can choose the number of firms to be
-randomly chosen to die.</li>
-<li>proportion_rand: proportion of dead firms in each Monte Carlo runs
-that are chosen completely at random (the remaining dead firms are
-chosen from the neighbours of the already dead firms). See docs
-for DeadRowsPartialRand.</li>
-</ul>
-</dd>
-<dt>Outputs:</dt>
-<dd><ul class="first last simple">
-<li>results: the number of pairs of dead nodes between which the
-shortest path is ell for every possible ell. Stored as dictionary
-results[ell] = no. pairs dead nodes with this ell. Saved to
-reports.</li>
-<li>mc_results: similar to results, except this time we repeat over
-and over for &#8216;dead&#8217; nodes chosen at random in the Monte Carlo.
-Also saved to reports.</li>
-<li>nb if the number of rows being read in is restricted then the
-filename is prepended with &#8216;TEST&#8217;.</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-src.shortest_path_lengths_speedup">
-<span id="shortest-path-lengths-speedup-module"></span><h2>shortest_path_lengths_speedup module<a class="headerlink" href="#module-src.shortest_path_lengths_speedup" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-src.summary_stats_plots">
-<span id="summary-stats-plots-module"></span><h2>summary_stats_plots module<a class="headerlink" href="#module-src.summary_stats_plots" title="Permalink to this headline">¶</a></h2>
-<p>Script to generate summary stats and plots for the LFN data.</p>
-</div>
-<div class="section" id="module-src.updated_degree">
-<span id="updated-degree-module"></span><h2>updated_degree module<a class="headerlink" href="#module-src.updated_degree" title="Permalink to this headline">¶</a></h2>
-<p>Look at the effect of updated degree on death.</p>
-<dl class="function">
-<dt id="src.updated_degree.PropDead">
-<code class="descclassname">src.updated_degree.</code><code class="descname">PropDead</code><span class="sig-paren">(</span><em>all_count</em>, <em>dead_count</em><span class="sig-paren">)</span><a class="headerlink" href="#src.updated_degree.PropDead" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take dictionary of dead counts and compare it to dictionary of counts for
-the entire LFN by taking ratios.
-&#8216;Overall&#8217; is the overall proportion of firms that died.
-Return dictionary of proportion dead, but also with the raw numbers.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.updated_degree.UpdatedDegreeRun">
-<code class="descclassname">src.updated_degree.</code><code class="descname">UpdatedDegreeRun</code><span class="sig-paren">(</span><em>year1</em>, <em>yearend</em>, <em>lfn</em>, <em>mc=False</em>, <em>add_flows=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.updated_degree.UpdatedDegreeRun" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find proportion of nodes with each updated degree that die in each</p>
-<p>Carry out one run to get updated degrees of all dead nodes and
-all nodes. Updated degree is degree of node in LFN minus the number
-of dead neighbours of the node (ie, number of living neighbours).</p>
-<p>More precisely, this function takes the first one year interval
-&#8216;year1-year1+1&#8217; and makes a list of the updated degree of every node in
-the LFN (since this is the first year, the updated degree is actually
-the same as the degree). It then finds the firms that died in the interval
-&#8216;year1-year1+1&#8217; and produces a list of the updated degrees of all these
-firms. The next year is then considered, &#8216;year1+1-year1+2&#8217; and the updated
-degrees of all remaining firms are added to the list of all degrees and
-similarly the updated degrees of all firms that died in that year are added
-to the list of all dead degrees.</p>
-<dl class="docutils">
-<dt>Note that:</dt>
-<dd><ol class="first last loweralpha simple">
-<li>In the calculation of the updated degree of node i, nodes that
-died in the same year as node i are counted as alive.</li>
-<li>The function returns only returns the running total of the updated
-degrees of all the firms that died in the entire &#8216;year1-yearend&#8217; interval.</li>
-</ol>
-</dd>
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>year1</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The first year of deaths to be considered.</dd>
-<dt>yearend</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The last year of deaths to be considered.</dd>
-<dt>lfn</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">LFN</span><dd>The lfn object being considered</dd>
-<dt>mc</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>Specifies whether a Monte Carlo Run is desired. In a Monte Carlo run
-the number of deaths in each interval of years is found from the
-data, but the firm IDs of the dead firms are chosen at random.</dd>
-<dt>add flows</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>If True then every time we consider a new year we don&#8217;t just kill
-the dead firms from that year, we also add any new nodes and edges
-that come from the flow data for that year.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><p class="first">2 lists : all_updtdeg, dead_updtdeg
-dead_uptdeg is a list of the updated degrees of every firm that
-died, where the updated degree is calculated at the time of death.
-all_updtdeg is a list of the updated degrees of every firm at the end of
-each time period.</p>
-<p class="last">These lists can be used to find, eg, the proportion of all firms with a
-given updated degree that died.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.updated_degree.main">
-<code class="descclassname">src.updated_degree.</code><code class="descname">main</code><span class="sig-paren">(</span><em>flow_years</em>, <em>year1</em>, <em>yearend</em>, <em>number_mc_runs</em><span class="sig-paren">)</span><a class="headerlink" href="#src.updated_degree.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-src.updated_deg_flows">
-<span id="updated-deg-flows-module"></span><h2>updated_deg_flows module<a class="headerlink" href="#module-src.updated_deg_flows" title="Permalink to this headline">¶</a></h2>
-<p>Analyse the flows between updated degrees.</p>
-<p>Compare the number of firms with updated degree i at the beginning of a time
-interval and the number at the end. The difference is a kind of flow of updated
-degree. Specifically, we can generate a matrix M[i, j] that records the flows
-from updated degree i to updated degree j.</p>
-<dl class="function">
-<dt id="src.updated_deg_flows.UpdatedDegreeFlowMatrix">
-<code class="descclassname">src.updated_deg_flows.</code><code class="descname">UpdatedDegreeFlowMatrix</code><span class="sig-paren">(</span><em>lfn</em>, <em>year=2000</em><span class="sig-paren">)</span><a class="headerlink" href="#src.updated_deg_flows.UpdatedDegreeFlowMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a 2D array of updated degree flows in year specified. Also
-generate 1D array of updated degrees of firms that die during the
-year.</p>
-<p>Matrix elements A[i, j] are the number of firms that had updated
-degree i at the start of the year and updated degree j at the end
-of the year.</p>
-<p>Array elements B[i] are the number of firms with updated degree i at
-the start of the year that die during the year.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>lfn : LFN object
-year : int</dd>
-<dt>Returns:</dt>
-<dd><ol class="first last loweralpha simple">
-<li>(2D numpy array)
-A[i, j] is the flow from i to j during the the year.</li>
-<li>(1D numpy array)
-B[i] is the number of firms with updated degree i that die.</li>
-</ol>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.updated_deg_flows.main">
-<code class="descclassname">src.updated_deg_flows.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.updated_deg_flows.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print out in text and as an image the matrix of updated degree flows.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-src.what_affects_death">
-<span id="what-affects-death-module"></span><h2>what_affects_death module<a class="headerlink" href="#module-src.what_affects_death" title="Permalink to this headline">¶</a></h2>
-<p>Look at how:
-(i) Degree,
-(ii) Sum of degrees of neighbours
-correlate with death rate.</p>
-<ul class="simple">
-<li>Produce plots of proportion of firms dead against (i)-(ii).</li>
-</ul>
-<dl class="function">
-<dt id="src.what_affects_death.PropPlot">
-<code class="descclassname">src.what_affects_death.</code><code class="descname">PropPlot</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>dead_counted</em>, <em>all_counted</em>, <em>prop_dead</em>, <em>total_prop_dead</em>, <em>feature</em>, <em>fig_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#src.what_affects_death.PropPlot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot proportions.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><ul class="first last simple">
-<li>start: first x value we want.</li>
-<li>end: last x value we want.</li>
-<li>dead_counted: collections module count dict of number of dead firms
-with each value of the feature.</li>
-<li>all_counted: as dead_counted except for all nodes in LFN.</li>
-<li>prop_dead: dictionary mapping feature values to proportion dead.</li>
-<li>total_prop_dead: overall proportion of firms in the LFN that died.</li>
-<li>feature: we examine the effect of the feature on the death rate.</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.what_affects_death.ProportionDead">
-<code class="descclassname">src.what_affects_death.</code><code class="descname">ProportionDead</code><span class="sig-paren">(</span><em>all_count_dict</em>, <em>dead_count_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#src.what_affects_death.ProportionDead" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take dictionary of dead counts and compare it to dictionary of counts for
-the entire LFN by taking ratios.
-Return dictionary of proportion dead.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.what_affects_death.SelectNWithoutReplacement">
-<code class="descclassname">src.what_affects_death.</code><code class="descname">SelectNWithoutReplacement</code><span class="sig-paren">(</span><em>domain</em>, <em>N</em><span class="sig-paren">)</span><a class="headerlink" href="#src.what_affects_death.SelectNWithoutReplacement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select N elements from the list, choosing them uniformly at random.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.what_affects_death.main">
-<code class="descclassname">src.what_affects_death.</code><code class="descname">main</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#src.what_affects_death.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-src">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -584,26 +100,6 @@ Return dictionary of proportion dead.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">src</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#c-shortest-path-lengths-module">C_shortest_path_lengths module</a></li>
-<li><a class="reference internal" href="#module-src.chooseE">chooseE module</a></li>
-<li><a class="reference internal" href="#module-src.general">general module</a></li>
-<li><a class="reference internal" href="#module-src.make_figures">make_figures module</a></li>
-<li><a class="reference internal" href="#module-src.setup">setup module</a></li>
-<li><a class="reference internal" href="#module-src.shortest_path_lengths">shortest_path_lengths module</a></li>
-<li><a class="reference internal" href="#module-src.shortest_path_lengths_speedup">shortest_path_lengths_speedup module</a></li>
-<li><a class="reference internal" href="#module-src.summary_stats_plots">summary_stats_plots module</a></li>
-<li><a class="reference internal" href="#module-src.updated_degree">updated_degree module</a></li>
-<li><a class="reference internal" href="#module-src.updated_deg_flows">updated_deg_flows module</a></li>
-<li><a class="reference internal" href="#module-src.what_affects_death">what_affects_death module</a></li>
-<li><a class="reference internal" href="#module-src">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
   <h4>Previous topic</h4>
   <p class="topless"><a href="commands.html"
                         title="previous chapter">Commands</a></p>
@@ -620,8 +116,8 @@ Return dictionary of proportion dead.</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -646,12 +142,12 @@ Return dictionary of proportion dead.</p>
         <li class="right" >
           <a href="commands.html" title="Commands"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright .
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

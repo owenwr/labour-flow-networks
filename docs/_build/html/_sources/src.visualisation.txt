@@ -1,19 +1,15 @@
 Visualisation package
 =========================
 
-Visualise module
-----------------------------------
-
-.. automodule:: src.visualisation.visualise
+.. automodule:: src.visualisation
     :members:
     :undoc-members:
     :show-inheritance:
 
+Visualise module
+----------------------------------
 
-Module contents
----------------
-
-.. automodule:: src.visualisation
+.. automodule:: src.visualisation.visualise
     :members:
     :undoc-members:
     :show-inheritance:

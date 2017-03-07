@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting started &mdash; labour-flow-networks 0.1 documentation</title>
+    <title>Getting started &#8212; labour-flow-networks 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="index.html" title="labour-flow-networks documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -60,6 +60,39 @@ line while in the labour-flow-networks project root directory and most recent
 versions of all relevant packages will be installed automatically. If you don&#8217;t
 have pip installed then google Anaconda Python and download the relevant
 Anaconda distribution for your operating system. This will give you pip.</p>
+<div class="section" id="data">
+<h2>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<p>All data used in this project is stored in the /data folder. The rawest form of
+the data I ever saw is in the /data/raw folder. However, this &#8216;raw&#8217; data is
+actually already processed, Omar Guerrero took it from the servers at Statistics
+Finland and cleaned it. Some of the outputs of my analysis scripts save data in
+the /data/processed folder.</p>
+<p>Despite Omar&#8217;s cleaning, there are problems with the data. For example, if you
+look at the number of firms that died in each year it looks like the data is not
+reliable before 1995. For this reason I tended to only analyse data from 1995
+onwards. Patrick Dendorfer has also found anomalies/problems in the data.</p>
+</div>
+<div class="section" id="lfn-class-objects">
+<h2>LFN Class Objects<a class="headerlink" href="#lfn-class-objects" title="Permalink to this headline">¶</a></h2>
+<p>In src/data/make_dataset_classes.py there is a class definition for an LFN
+object. Familiarity with the LFN object is important since it is the basis
+for everything. The class allows you to easily create and manipulate Labour
+Flow Networks.</p>
+</div>
+<div class="section" id="lfn-scripts">
+<h2>LFN Scripts<a class="headerlink" href="#lfn-scripts" title="Permalink to this headline">¶</a></h2>
+<p>The src folder contains a number of scripts. These scripts are for pieces of
+analysis I have done on Labour Flow Networks. Probably the most important is
+shortest_path_lengths.py. This script analyses the shortest path lengths
+between pairs of firms in general and between pairs of firms that died. The
+idea is to see if firms that die tend to be closer to each other in the network
+than random (a Monte Carlo simulation is used to find how far away we would
+expect them to be at random).</p>
+</div>
+<div class="section" id="reports">
+<h2>Reports<a class="headerlink" href="#reports" title="Permalink to this headline">¶</a></h2>
+<p>All the figures produced in scripts are saved in /reports/figures.</p>
+</div>
 <div class="section" id="filename-conventions">
 <h2>Filename Conventions<a class="headerlink" href="#filename-conventions" title="Permalink to this headline">¶</a></h2>
 <p>&#8216;flowyearsxxxx-yyyy&#8217;: signifies that the LFN in use was constructed from all
@@ -82,6 +115,10 @@ Carlo simulation).</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Getting started</a><ul>
+<li><a class="reference internal" href="#data">Data</a></li>
+<li><a class="reference internal" href="#lfn-class-objects">LFN Class Objects</a></li>
+<li><a class="reference internal" href="#lfn-scripts">LFN Scripts</a></li>
+<li><a class="reference internal" href="#reports">Reports</a></li>
 <li><a class="reference internal" href="#filename-conventions">Filename Conventions</a></li>
 </ul>
 </li>
@@ -103,8 +140,8 @@ Carlo simulation).</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -129,12 +166,12 @@ Carlo simulation).</p>
         <li class="right" >
           <a href="index.html" title="labour-flow-networks documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">labour-flow-networks 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright .
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

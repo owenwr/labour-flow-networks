@@ -1,14 +1,74 @@
 '''
-Script to get shortest path lengths (what I call ell values) between pairs
-of dead nodes in a Labour Flow Network. Both the nodes that actually die and
-a Monte Carlo, where dead nodes are chosen at random, are produced.
+Introduction
+*************
 
-1. Create LFN based on a period of flows.
-2. Determine dead firms based on a period of deaths.
-3. Find the shortest path between each pair of nodes in the LFN.
-4. Find shortest path length between each pair of dead firms.
-5. Compare ell values for the acutal dead firms with a Monte Carlo Simulation
-   where dead firms are picked at random (but the total number dead is fixed).
+Script to get shortest path lengths (what I call ell values) between pairs
+of dead nodes in a Labour Flow Network. The ell value is calculated for every
+pair of dead nodes; the calculation is then repeated many times with randomly
+selected 'dead' nodes.
+
+Motivation
+************
+
+We want to determine whether there is a pattern to how firms die in a Labour
+Flow Network. Specifically, this script tests for a pattern in the network
+distances between firms that die. It does so by finding the number of pairs of
+dead firms with each ell value. A Monte Carlo Simulation is used to put the
+results into context. In the simulation, a set number of firms are chosen to
+'die' at random, and the number of firms with each ell value is found. Once
+the results are plotted using the make_shortest_path_lengths_figures we can
+compare, eg, the number of pairs of dead firms with ell value 2 (ie, the
+shortest path between them in the network has length 2) with the number of pairs
+of firms with ell value 2 in each of the Monte Carlo Simulations.
+
+Details
+*********
+
+**ell value** : The ell value for a pair of nodes in a Labour Flow Network is
+the length of the shortest path between them. The path can pass through alive
+and dead nodes (ie, we are not restricted to only travel through living nodes
+when finding the shortest path).
+
+1. Create LFN based on the flows in some chosen time period.
+2. Determine dead firms based on firm deaths in some other chosen time period.
+3. Find the length of the shortest path between each pair of nodes in the LFN (
+   ie, find all the ell values).
+4. Find the subset of the list of ell values that correspond to the shortest
+   path lengths between each pair of *dead* firms.
+5. Repeat step 4 but with the dead firms being chosen at random. The total
+   number of dead firms is not random (it is chosen to be the same as in 4), but
+   the nodes that die are randomly selected.
+
+The docstring for the main() function includes information on the parameters.
+See the docstring for full details, but note in partcicular
+- The *nflowrows* parameter : if chosen to be a small number, small LFNs can be
+generated to be used in quickly testing the code for obvious bugs.
+- The *nrand* parameter : allows control over the number of firms that are
+chosen randomly. See the the docstring of DeadRowsPartialRand below and the docs
+for script chooseE.py for full details. In short, this parameter allows
+the 'dead' nodes in the Monte Carlo Simulation to be chosen partially at random
+and partially through a specified algorithm. This was an attempt to create Monte
+Carlo results that looked more like the actual results. If we could get some
+Monte Caro algorithm to look like the real results then that suggests we might
+have a model for what's really happening.
+
+The docstring also explains the format of the output. In short, the output
+for a run with a given set of parameters is two pickled python dictionaries.
+Both are of the form dict[ell] = number of pairs of nodes with that ell
+value. In the res dictionary, we have dict[ell] = number of pairs of actually
+dead nodes with this ell value, in the mcres dictinoary it is instead a list
+of the number of 'dead' nodes with this ell value in each of the Monte Carlo
+runs.
+
+Notes
+******
+
+Ahsen Uppal at George Washington University suggested me that I could
+speedup my current shortest_lengths.py Script by moving to numpy matrices. This
+would be instead of using the Cython module.
+
+Functions
+************
 
 '''
 

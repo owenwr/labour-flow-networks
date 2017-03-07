@@ -1,3 +1,10 @@
+'''
+Very basic environment tests.
+
+Essentially just tests that there is an appropriate Python version on the
+machine.
+'''
+
 import sys
 
 REQUIRED_PYTHON = "python"

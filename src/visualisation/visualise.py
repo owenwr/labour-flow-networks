@@ -162,9 +162,9 @@ def RatiosBarCharts(
 
     Args:
         - data_list: list of tuples of filepaths in format
-        [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
-        are for pickle files that contain the dictionaries with keys as ell
-        values such that:
+          [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths
+          are for pickle files that contain the dictionaries with keys as ell
+          values such that:
 
             - mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the
               number of pairs of dead nodes between which the shortest path is
@@ -325,16 +325,44 @@ def RatiosOverlay(
               'death years. With calibration at ' + str(cal_at))
     plt.show()
 
-def DegreeDist(graph, loglog=True):
+def DegreeDist(graph, loglog=True, output_filepath=None):
+    '''
+    Create a plot of the degree distribution of a NetworkX graph.
+
+    Args:
+        - graph : NetworkX graph
+        - loglog : bool
+            Set axes scales to be logarithmic.
+        - output_filepath : str
+            If an output filepath is provided then the plot is saved to that
+            location.
+    Returns:
+        - Pyplot plot.
+    '''
     d = nx.degree(graph).values()
     plt.hist(d, bins=1000)
     if loglog == True:
         plt.yscale('log')
         plt.xscale('log')
     plt.title('Degree Distribution.')
-    plt.show()
+    if output_filepath == None:
+        plt.show()
+    else:
+        plt.savefig(output_filepath)
 
-def CCDist(graph):
+def CCDist(graph, output_filepath):
+    '''
+    Create a plot of the distribution of connected component subgraph sizes from
+    a NetworkX graph.
+
+    Args:
+        - graph : NetworkX graph
+        - output_filepath : str
+            If an output filepath is provided then the plot is saved to that
+            location.
+    Returns:
+        - Pyplot plot.
+    '''
     cc_graphs = nx.connected_component_subgraphs(graph)
     sizes = [len(g.nodes()) for g in cc_graphs]
     sizes.sort()
@@ -365,7 +393,10 @@ def CCDist(graph):
                 {'horizontalalignment': 'left'})
     ax.set_xlabel('Component Size')
     ax.set_ylabel('Frequency')
-    plt.show()
+    if output_filepath == None:
+        plt.show()
+    else:
+        plt.savefig(output_filepath)
 
 def MonteCarloBoxPlot(monte_carlo, actual, axes, info=None, xpos=1):
     '''
