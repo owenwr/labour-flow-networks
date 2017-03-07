@@ -13,8 +13,6 @@ import numpy as np
 import networkx as nx
 from src.visualisation import visualise as vis
 
-
-
 def YrsFromStr(years):
     '''
     Take string in format 'year1-year2' and return integers year1, year2.
