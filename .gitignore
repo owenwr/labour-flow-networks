@@ -1,2 +1,8 @@
-data
+data/raw/16-12-2016-Mega/dates_birth.csv
+data/raw/16-12-2016-Mega/dates_death.csv
+data/raw/16-12-2016-Mega/flows
+data/raw/16-12-2016-Mega/geography
+data/raw/16-12-2016-Mega/industrial-classification
+data/raw/16-12-2016-Mega/profits
+data/raw/16-12-2016-Mega/sizes
 *.pyc
