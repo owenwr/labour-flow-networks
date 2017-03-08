@@ -1,31 +1,3 @@
-Obtaining the Data
-————————————————————
-
-Data is not uploaded to GitHub since it is sensitive.
-Contact project author, Owen Riddall, for access to data.
-Omar Guerrero also has access, contact him via his website: http://oguerr.com/
-
-Organisation of Data Folders
-—————————————————————————————
-Folders must be organized like this for code in project to work.
-
-16-12-2016-Mega
-    |
-    |— dates_birth.csv			< file containing firm birth dates
-    |- dates_death.csv			< file containing firm death dates
-    |- flows				< directory containing worker flows for year year
-    |    |- flows_1988-1989.csv		< filenames in this form
-    |- geography			< directory containing firm geographical classification for each year
-    |    |- kkunta_1988.csv		< filenames in this form
-    |- industrial-classification	< directory containing firm industrial classification for each year
-    |    |- maak_1988.csv		< filenames in this form
-    |- profits				< directory containing firm profits for each year
-    |    |- profits_1988.csv		< filenames in this form
-    |- sizes				< directory containing firm sizes for each year
-    |    |- sizes_1988.csv		< filenames in this form
-
-File Format
-————————————
 A brief description of the files’ format and content.
 
 Filename: dates_birth

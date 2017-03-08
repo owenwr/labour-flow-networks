@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>updated_degree module &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="index.html" />
+    <link rel="up" title="src" href="src.html" />
+    <link rel="next" title="updated_deg_flows module" href="src.updated_degree_flows.html" />
+    <link rel="prev" title="general module" href="src.general.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-src.updated_degree">
+<span id="updated-degree-module"></span><h1>updated_degree module<a class="headerlink" href="#module-src.updated_degree" title="Permalink to this headline">¶</a></h1>
+<p>Examine the effect of updated degree on death.</p>
+<dl class="function">
+<dt id="src.updated_degree.PropDead">
+<code class="descclassname">src.updated_degree.</code><code class="descname">PropDead</code><span class="sig-paren">(</span><em>all_count</em>, <em>dead_count</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/updated_degree.html#PropDead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.updated_degree.PropDead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take dictionary of dead counts and compare it to dictionary of counts for
+the entire LFN by taking ratios.
+&#8216;Overall&#8217; is the overall proportion of firms that died.
+Return dictionary of proportion dead, but also with the raw numbers.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.updated_degree.UpdatedDegreeRun">
+<code class="descclassname">src.updated_degree.</code><code class="descname">UpdatedDegreeRun</code><span class="sig-paren">(</span><em>year1</em>, <em>yearend</em>, <em>lfn</em>, <em>mc=False</em>, <em>add_flows=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/updated_degree.html#UpdatedDegreeRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.updated_degree.UpdatedDegreeRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find proportion of nodes with each updated degree that die in each time
+interval.</p>
+<p><strong>Warning</strong> : I think there are problems if you pick arbitrary year1 and
+yearend. This works if year1 is also the first year of flow data that the
+lfn is based on. To make it work for arbitrary year1 it would require some
+tweaking. For anyone using this function I would probably suggest writing
+a new one (or properly understanding and fixing this one).</p>
+<p>Carry out one run to get updated degrees of all dead nodes and
+all nodes. Updated degree is degree of node in LFN minus the number
+of dead neighbours of the node (ie, number of living neighbours).</p>
+<p>More precisely, this function takes the first one year interval
+&#8216;year1-year1+1&#8217; and makes a list of the updated degree of every node in
+the LFN (since this is the first year, the updated degree is actually
+the same as the degree). It then finds the firms that died in the interval
+&#8216;year1-year1+1&#8217; and produces a list of the updated degrees of all these
+firms. The next year is then considered, &#8216;year1+1-year1+2&#8217; and the updated
+degrees of all remaining firms are added to the list of all degrees and
+similarly the updated degrees of all firms that died in that year are added
+to the list of all dead degrees.</p>
+<dl class="docutils">
+<dt>Note that:</dt>
+<dd><ol class="first last loweralpha simple">
+<li>In the calculation of the updated degree of node i, nodes that
+died in the same year as node i are counted as alive.</li>
+<li>The function returns only returns the running total of the updated
+degrees of all the firms that died in the entire &#8216;year1-yearend&#8217; interval.</li>
+</ol>
+</dd>
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>year1</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The first year of deaths to be considered.</dd>
+<dt>yearend</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The last year of deaths to be considered.</dd>
+<dt>lfn</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">LFN</span><dd>The lfn object being considered</dd>
+<dt>mc</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>Specifies whether a Monte Carlo Run is desired. In a Monte Carlo run
+the number of deaths in each interval of years is found from the
+data, but the firm IDs of the dead firms are chosen at random.</dd>
+<dt>add flows</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>If True then every time we consider a new year we don&#8217;t just kill
+the dead firms from that year, we also add any new nodes and edges
+that come from the flow data for that year.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">2 lists : all_updtdeg, dead_updtdeg
+dead_uptdeg is a list of the updated degrees of every firm that
+died, where the updated degree is calculated at the time of death.
+all_updtdeg is a list of the updated degrees of every firm at the end of
+each time period.</p>
+<p class="last">These lists can be used to find, eg, the proportion of all firms with a
+given updated degree that died.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.updated_degree.main">
+<code class="descclassname">src.updated_degree.</code><code class="descname">main</code><span class="sig-paren">(</span><em>flow_years</em>, <em>year1</em>, <em>yearend</em>, <em>number_mc_runs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/updated_degree.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.updated_degree.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="src.html">src</a><ul>
+      <li>Previous: <a href="src.general.html" title="previous chapter">general module</a></li>
+      <li>Next: <a href="src.updated_degree_flows.html" title="next chapter">updated_deg_flows module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/src.updated_degree.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/src.updated_degree.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

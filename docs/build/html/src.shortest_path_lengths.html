@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>shortest_path_lengths module &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="index.html" />
+    <link rel="up" title="src" href="src.html" />
+    <link rel="next" title="make_shortest_path_length_figures module" href="src.make_shortest_path_lengths_figures.html" />
+    <link rel="prev" title="Visualisation package" href="src.visualisation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-src.shortest_path_lengths">
+<span id="shortest-path-lengths-module"></span><h1>shortest_path_lengths module<a class="headerlink" href="#module-src.shortest_path_lengths" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Script to get shortest path lengths (what I call ell values) between pairs
+of dead nodes in a Labour Flow Network. The ell value is calculated for every
+pair of dead nodes; the calculation is then repeated many times with randomly
+selected &#8216;dead&#8217; nodes.</p>
+</div>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>We want to determine whether there is a pattern to how firms die in a Labour
+Flow Network. Specifically, this script tests for a pattern in the network
+distances between firms that die. It does so by finding the number of pairs of
+dead firms with each ell value. A Monte Carlo Simulation is used to put the
+results into context. In the simulation, a set number of firms are chosen to
+&#8216;die&#8217; at random, and the number of firms with each ell value is found. Once
+the results are plotted using the make_shortest_path_lengths_figures we can
+compare, eg, the number of pairs of dead firms with ell value 2 (ie, the
+shortest path between them in the network has length 2) with the number of pairs
+of firms with ell value 2 in each of the Monte Carlo Simulations.</p>
+</div>
+<div class="section" id="details">
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
+<p><strong>ell value</strong> : The ell value for a pair of nodes in a Labour Flow Network is
+the length of the shortest path between them. The path can pass through alive
+and dead nodes (ie, we are not restricted to only travel through living nodes
+when finding the shortest path).</p>
+<ol class="arabic simple">
+<li>Create LFN based on the flows in some chosen time period.</li>
+<li>Determine dead firms based on firm deaths in some other chosen time period.</li>
+<li>Find the length of the shortest path between each pair of nodes in the LFN (
+ie, find all the ell values).</li>
+<li>Find the subset of the list of ell values that correspond to the shortest
+path lengths between each pair of <em>dead</em> firms.</li>
+<li>Repeat step 4 but with the dead firms being chosen at random. The total
+number of dead firms is not random (it is chosen to be the same as in 4), but
+the nodes that die are randomly selected.</li>
+</ol>
+<p>The docstring for the main() function includes information on the parameters.
+See the docstring for full details, but note in partcicular
+- The <em>nflowrows</em> parameter : if chosen to be a small number, small LFNs can be
+generated to be used in quickly testing the code for obvious bugs.
+- The <em>nrand</em> parameter : allows control over the number of firms that are
+chosen randomly. See the the docstring of DeadRowsPartialRand below and the docs
+for script chooseE.py for full details. In short, this parameter allows
+the &#8216;dead&#8217; nodes in the Monte Carlo Simulation to be chosen partially at random
+and partially through a specified algorithm. This was an attempt to create Monte
+Carlo results that looked more like the actual results. If we could get some
+Monte Caro algorithm to look like the real results then that suggests we might
+have a model for what&#8217;s really happening.</p>
+<p>The docstring also explains the format of the output. In short, the output
+for a run with a given set of parameters is two pickled python dictionaries.
+Both are of the form dict[ell] = number of pairs of nodes with that ell
+value. In the res dictionary, we have dict[ell] = number of pairs of actually
+dead nodes with this ell value, in the mcres dictinoary it is instead a list
+of the number of &#8216;dead&#8217; nodes with this ell value in each of the Monte Carlo
+runs.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>Ahsen Uppal at George Washington University suggested me that I could
+speedup my current shortest_lengths.py Script by moving to numpy matrices. This
+would be instead of using the Cython module.</p>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="src.shortest_path_lengths.DeadFirstNeighs">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadFirstNeighs</code><span class="sig-paren">(</span><em>graph</em>, <em>dead_ids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#DeadFirstNeighs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.DeadFirstNeighs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get E (the number of edges that connect dead firms in the actual data).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.shortest_path_lengths.DeadRows">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadRows</code><span class="sig-paren">(</span><em>dead_ids</em>, <em>id_to_row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#DeadRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.DeadRows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take IDs of dead firms and return array of rows of shp_array that are dead</p>
+<p>&#8211;Note that firm ids for firms that are not in the LFN are discarded&#8211;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.shortest_path_lengths.DeadRowsPartialRand">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadRowsPartialRand</code><span class="sig-paren">(</span><em>number_dead</em>, <em>all_rows</em>, <em>graph</em>, <em>nrand</em>, <em>row_to_id</em>, <em>id_to_row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#DeadRowsPartialRand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.DeadRowsPartialRand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a partially random selection of n=number_dead dead rows from the
+shortest_paths array.</p>
+<p>We choose nrand firms from the network at random and kill them. All the
+neighbours of these dead firms are found and nrand_neighs = number_dead -
+nrand of these firms are killed. By choosing the firms partially at random
+in this way we hope to reproduce results that look more like the actual
+pattern of dead firms than when a Monte Carlo with completely random firm
+deaths is used. If we are right about this then it suggests that the real
+driving mechanism for the pattern observed is ell=1 being high (ie
+neighbouring firms dying together), and the effects at higher ell-values
+result from this.</p>
+<p>As a first approximation nrand = number_dead - E where E is the number of
+first neighbour edges in the real pattern of dead firms (ie the number of
+edges connecting actually dead firms in the LFN). After using this nrand the
+resulting number of first neighbour edges in the randomly selected dead
+firms is found, I call this e. If e &gt; E (which is to be expected), then a
+lower value for nrand is chosen. The method for this calibration is discussed
+below.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>number_dead: number of rows we want to kill</li>
+<li>all_rows: list of all the rows (which represent firms in the graph)
+in shp_array. This is equivalent to range(len(shp_array)).</li>
+<li>graph: the relevant LFN</li>
+<li>nrand: the number of dead firms chosen in an uncorrelated way.</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>array of number_dead dead rows from all_rows</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.shortest_path_lengths.DeadRowsRand">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">DeadRowsRand</code><span class="sig-paren">(</span><em>number_dead</em>, <em>all_rows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#DeadRowsRand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.DeadRowsRand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a random selection of n=number_dead dead rows from the shortest paths
+array.</p>
+<p>Note that all_rows is a mutable type and is passed by value so this function
+changes it, that doesn&#8217;t matter though - it&#8217;s just shuffling the order.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>number_dead: number of rows we want to kill</li>
+<li>all_rows: list of all the rows (which represent firms in the graph)
+in shp_array. This is equivalent to range(len(shp_array)).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>array of number_dead dead rows from all_rows.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.shortest_path_lengths.MCAddRun">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">MCAddRun</code><span class="sig-paren">(</span><em>mc_results</em>, <em>mc_results_single</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#MCAddRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.MCAddRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the mc_results variable with the results of a Monte Carlo run.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>mc_results: stores all Monte Carlo results,
+mc_results[ell] = [no. pairs with ell in run 1, no. pairs with ell in
+run 2, ...]</li>
+<li>mc_results_single: results of a single Monte Carlo Run, ie,
+mc_results[ell] = no. pairs of dead rows with ell in last MC run.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.shortest_path_lengths.SHPToArray">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">SHPToArray</code><span class="sig-paren">(</span><em>shp_dictofdicts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#SHPToArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.SHPToArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform dict of dicts to array plus dictionay mapping firm IDs to row
+numbers and tuple mapping row numbers to firm IDs.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>shp_dictofdicts</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd><p class="first last">Dictionary of dictionaries such that d[i][j] is the shortest path
+length between firms i and j.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>shp_array: array</dt>
+<dd><p class="first last">Array such that a[i][j] is the shortest path length between firms i
+and j.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>row_to_id</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span><dd><p class="first last">Tuple such that row_to_id[i] gives the firm ID that row i in
+shp_array corresponds to.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>id_to_row: dict</dt>
+<dd><p class="first last">dictionary such that id_to_row[i] gives the row in shp_array that ID
+i maps to.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.shortest_path_lengths.main">
+<code class="descclassname">src.shortest_path_lengths.</code><code class="descname">main</code><span class="sig-paren">(</span><em>flow_years</em>, <em>death_years='all'</em>, <em>nflowrows=None</em>, <em>ndeathrows=None</em>, <em>test=False</em>, <em>mc_runs=0</em>, <em>mc_force_number_dead='no'</em>, <em>nrand=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/shortest_path_lengths.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.shortest_path_lengths.main" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>flow_years: format &#8216;year1-year2&#8217;. The LFN will be created from
+flows in this time period.</li>
+<li>death_years: &#8216;all&#8217; or &#8216;starty-endyr&#8217;. If &#8216;all&#8217; then all firm
+deaths will be considered, if string in form stated is provided
+then only deaths in the specified years are considered.</li>
+<li>nflowrows: can be used to resrict the number of lines of the flow
+file that are read. This speeds things up (since the resulting LFN
+is smaller).</li>
+<li>ndeathrows: can be used to restrict the number of lines of the
+death file that are read.</li>
+<li>mc_runs: the number of Monte Carlo runs to be completed.</li>
+<li>mc_force_number_dead: default for number of dead firms in the
+Monte Carlo is the number that actuall died in the period.
+However, with this input you can choose the number of firms to be
+randomly chosen to die.</li>
+<li>proportion_rand: proportion of dead firms in each Monte Carlo runs
+that are chosen completely at random (the remaining dead firms are
+chosen from the neighbours of the already dead firms). See docs
+for DeadRowsPartialRand.</li>
+</ul>
+</dd>
+<dt>Outputs:</dt>
+<dd><ul class="first last simple">
+<li>results: the number of pairs of dead nodes between which the
+shortest path is ell for every possible ell. Stored as dictionary
+results[ell] = no. pairs dead nodes with this ell. Saved to
+reports.</li>
+<li>mc_results: similar to results, except this time we repeat over
+and over for &#8216;dead&#8217; nodes chosen at random in the Monte Carlo.
+Also saved to reports.</li>
+<li>nb if the number of rows being read in is restricted then the
+filename is prepended with &#8216;TEST&#8217;.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">shortest_path_lengths module</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#motivation">Motivation</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="src.html">src</a><ul>
+      <li>Previous: <a href="src.visualisation.html" title="previous chapter">Visualisation package</a></li>
+      <li>Next: <a href="src.make_shortest_path_lengths_figures.html" title="next chapter">make_shortest_path_length_figures module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/src.shortest_path_lengths.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/src.shortest_path_lengths.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

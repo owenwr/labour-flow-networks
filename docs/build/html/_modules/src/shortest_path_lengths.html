@@ -1,0 +1,476 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src.shortest_path_lengths &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for src.shortest_path_lengths</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Introduction</span>
+<span class="sd">*************</span>
+
+<span class="sd">Script to get shortest path lengths (what I call ell values) between pairs</span>
+<span class="sd">of dead nodes in a Labour Flow Network. The ell value is calculated for every</span>
+<span class="sd">pair of dead nodes; the calculation is then repeated many times with randomly</span>
+<span class="sd">selected &#39;dead&#39; nodes.</span>
+
+<span class="sd">Motivation</span>
+<span class="sd">************</span>
+
+<span class="sd">We want to determine whether there is a pattern to how firms die in a Labour</span>
+<span class="sd">Flow Network. Specifically, this script tests for a pattern in the network</span>
+<span class="sd">distances between firms that die. It does so by finding the number of pairs of</span>
+<span class="sd">dead firms with each ell value. A Monte Carlo Simulation is used to put the</span>
+<span class="sd">results into context. In the simulation, a set number of firms are chosen to</span>
+<span class="sd">&#39;die&#39; at random, and the number of firms with each ell value is found. Once</span>
+<span class="sd">the results are plotted using the make_shortest_path_lengths_figures we can</span>
+<span class="sd">compare, eg, the number of pairs of dead firms with ell value 2 (ie, the</span>
+<span class="sd">shortest path between them in the network has length 2) with the number of pairs</span>
+<span class="sd">of firms with ell value 2 in each of the Monte Carlo Simulations.</span>
+
+<span class="sd">Details</span>
+<span class="sd">*********</span>
+
+<span class="sd">**ell value** : The ell value for a pair of nodes in a Labour Flow Network is</span>
+<span class="sd">the length of the shortest path between them. The path can pass through alive</span>
+<span class="sd">and dead nodes (ie, we are not restricted to only travel through living nodes</span>
+<span class="sd">when finding the shortest path).</span>
+
+<span class="sd">1. Create LFN based on the flows in some chosen time period.</span>
+<span class="sd">2. Determine dead firms based on firm deaths in some other chosen time period.</span>
+<span class="sd">3. Find the length of the shortest path between each pair of nodes in the LFN (</span>
+<span class="sd">   ie, find all the ell values).</span>
+<span class="sd">4. Find the subset of the list of ell values that correspond to the shortest</span>
+<span class="sd">   path lengths between each pair of *dead* firms.</span>
+<span class="sd">5. Repeat step 4 but with the dead firms being chosen at random. The total</span>
+<span class="sd">   number of dead firms is not random (it is chosen to be the same as in 4), but</span>
+<span class="sd">   the nodes that die are randomly selected.</span>
+
+<span class="sd">The docstring for the main() function includes information on the parameters.</span>
+<span class="sd">See the docstring for full details, but note in partcicular</span>
+<span class="sd">- The *nflowrows* parameter : if chosen to be a small number, small LFNs can be</span>
+<span class="sd">generated to be used in quickly testing the code for obvious bugs.</span>
+<span class="sd">- The *nrand* parameter : allows control over the number of firms that are</span>
+<span class="sd">chosen randomly. See the the docstring of DeadRowsPartialRand below and the docs</span>
+<span class="sd">for script chooseE.py for full details. In short, this parameter allows</span>
+<span class="sd">the &#39;dead&#39; nodes in the Monte Carlo Simulation to be chosen partially at random</span>
+<span class="sd">and partially through a specified algorithm. This was an attempt to create Monte</span>
+<span class="sd">Carlo results that looked more like the actual results. If we could get some</span>
+<span class="sd">Monte Caro algorithm to look like the real results then that suggests we might</span>
+<span class="sd">have a model for what&#39;s really happening.</span>
+
+<span class="sd">The docstring also explains the format of the output. In short, the output</span>
+<span class="sd">for a run with a given set of parameters is two pickled python dictionaries.</span>
+<span class="sd">Both are of the form dict[ell] = number of pairs of nodes with that ell</span>
+<span class="sd">value. In the res dictionary, we have dict[ell] = number of pairs of actually</span>
+<span class="sd">dead nodes with this ell value, in the mcres dictinoary it is instead a list</span>
+<span class="sd">of the number of &#39;dead&#39; nodes with this ell value in each of the Monte Carlo</span>
+<span class="sd">runs.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">******</span>
+
+<span class="sd">Ahsen Uppal at George Washington University suggested me that I could</span>
+<span class="sd">speedup my current shortest_lengths.py Script by moving to numpy matrices. This</span>
+<span class="sd">would be instead of using the Cython module.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">************</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1">#================================================</span>
+<span class="c1">#---imports and env variables-----</span>
+<span class="c1">#================================================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tqdm</span> <span class="c1">#package for monitoring the progress of for loops with a progresbar</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">pickle</span> <span class="k">as</span> <span class="nn">pkl</span>
+<span class="kn">import</span> <span class="nn">data.make_dataset_classes</span> <span class="k">as</span> <span class="nn">dat</span>
+<span class="kn">import</span> <span class="nn">general</span> <span class="k">as</span> <span class="nn">gen</span> <span class="c1">#a miscellanious set of functions</span>
+
+<span class="kn">import</span> <span class="nn">Cython</span>
+<span class="kn">import</span> <span class="nn">pyximport</span>
+<span class="n">pyximport</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">setup_args</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;include_dirs&quot;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">get_include</span><span class="p">()})</span>
+<span class="kn">import</span> <span class="nn">C_shortest_path_lengths</span> <span class="k">as</span> <span class="nn">Cshp</span>
+
+<span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
+
+<span class="c1">#================================================</span>
+<span class="c1">#---define functions-----</span>
+<span class="c1">#================================================</span>
+
+<div class="viewcode-block" id="SHPToArray"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.SHPToArray">[docs]</a><span class="k">def</span> <span class="nf">SHPToArray</span><span class="p">(</span><span class="n">shp_dictofdicts</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Transform dict of dicts to array plus dictionay mapping firm IDs to row</span>
+<span class="sd">    numbers and tuple mapping row numbers to firm IDs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - shp_dictofdicts : dict</span>
+<span class="sd">            Dictionary of dictionaries such that d[i][j] is the shortest path</span>
+<span class="sd">            length between firms i and j.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        - shp_array: array</span>
+<span class="sd">            Array such that a[i][j] is the shortest path length between firms i</span>
+<span class="sd">            and j.</span>
+<span class="sd">        - row_to_id : tuple</span>
+<span class="sd">            Tuple such that row_to_id[i] gives the firm ID that row i in</span>
+<span class="sd">            shp_array corresponds to.</span>
+<span class="sd">        - id_to_row: dict</span>
+<span class="sd">            dictionary such that id_to_row[i] gives the row in shp_array that ID</span>
+<span class="sd">            i maps to.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">shp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">shp_dictofdicts</span><span class="p">)</span>
+    <span class="n">shp_df</span> <span class="o">=</span> <span class="n">shp_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#fill NaNs (which correspond to no path) with -1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: changing dtype in this way might not be RAM efficient&#39;</span><span class="p">)</span>
+    <span class="n">shp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">shp_df</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span> <span class="c1">#change dtype from float to int</span>
+    <span class="n">shp_array</span> <span class="o">=</span> <span class="n">shp_df</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+    <span class="n">row_to_id</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shp_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">id_to_row</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row_to_id</span><span class="p">)):</span>
+        <span class="n">id_to_row</span><span class="p">[</span><span class="n">row_to_id</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">shp_array</span><span class="p">,</span> <span class="n">row_to_id</span><span class="p">,</span> <span class="n">id_to_row</span></div>
+
+<div class="viewcode-block" id="DeadRows"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.DeadRows">[docs]</a><span class="k">def</span> <span class="nf">DeadRows</span><span class="p">(</span><span class="n">dead_ids</span><span class="p">,</span> <span class="n">id_to_row</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Take IDs of dead firms and return array of rows of shp_array that are dead</span>
+
+<span class="sd">    --Note that firm ids for firms that are not in the LFN are discarded--</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">dead_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dead_ids</span><span class="p">)</span>
+    <span class="n">ids_in_g</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">id_to_row</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="c1">#get ids that are both in g and are dead.</span>
+    <span class="n">dead_ids_in_g</span> <span class="o">=</span> <span class="n">dead_ids</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">ids_in_g</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">id_to_row</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dead_ids_in_g</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DeadRowsRand"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.DeadRowsRand">[docs]</a><span class="k">def</span> <span class="nf">DeadRowsRand</span><span class="p">(</span><span class="n">number_dead</span><span class="p">,</span> <span class="n">all_rows</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get a random selection of n=number_dead dead rows from the shortest paths</span>
+<span class="sd">    array.</span>
+
+<span class="sd">    Note that all_rows is a mutable type and is passed by value so this function</span>
+<span class="sd">    changes it, that doesn&#39;t matter though - it&#39;s just shuffling the order.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - number_dead: number of rows we want to kill</span>
+<span class="sd">        - all_rows: list of all the rows (which represent firms in the graph)</span>
+<span class="sd">          in shp_array. This is equivalent to range(len(shp_array)).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        - array of number_dead dead rows from all_rows.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="n">number_dead</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_rows</span><span class="p">)</span> <span class="c1">#sanity check</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">all_rows</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_rows</span><span class="p">[:</span><span class="n">number_dead</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DeadFirstNeighs"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.DeadFirstNeighs">[docs]</a><span class="k">def</span> <span class="nf">DeadFirstNeighs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">dead_ids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get E (the number of edges that connect dead firms in the actual data).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">dead_subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">dead_ids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">dead_subgraph</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeadRowsPartialRand"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.DeadRowsPartialRand">[docs]</a><span class="k">def</span> <span class="nf">DeadRowsPartialRand</span><span class="p">(</span>
+                        <span class="n">number_dead</span><span class="p">,</span> <span class="n">all_rows</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">nrand</span><span class="p">,</span>
+                        <span class="n">row_to_id</span><span class="p">,</span> <span class="n">id_to_row</span>
+                        <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get a partially random selection of n=number_dead dead rows from the</span>
+<span class="sd">    shortest_paths array.</span>
+
+<span class="sd">    We choose nrand firms from the network at random and kill them. All the</span>
+<span class="sd">    neighbours of these dead firms are found and nrand_neighs = number_dead -</span>
+<span class="sd">    nrand of these firms are killed. By choosing the firms partially at random</span>
+<span class="sd">    in this way we hope to reproduce results that look more like the actual</span>
+<span class="sd">    pattern of dead firms than when a Monte Carlo with completely random firm</span>
+<span class="sd">    deaths is used. If we are right about this then it suggests that the real</span>
+<span class="sd">    driving mechanism for the pattern observed is ell=1 being high (ie</span>
+<span class="sd">    neighbouring firms dying together), and the effects at higher ell-values</span>
+<span class="sd">    result from this.</span>
+
+<span class="sd">    As a first approximation nrand = number_dead - E where E is the number of</span>
+<span class="sd">    first neighbour edges in the real pattern of dead firms (ie the number of</span>
+<span class="sd">    edges connecting actually dead firms in the LFN). After using this nrand the</span>
+<span class="sd">    resulting number of first neighbour edges in the randomly selected dead</span>
+<span class="sd">    firms is found, I call this e. If e &gt; E (which is to be expected), then a</span>
+<span class="sd">    lower value for nrand is chosen. The method for this calibration is discussed</span>
+<span class="sd">    below.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - number_dead: number of rows we want to kill</span>
+<span class="sd">        - all_rows: list of all the rows (which represent firms in the graph)</span>
+<span class="sd">          in shp_array. This is equivalent to range(len(shp_array)).</span>
+<span class="sd">        - graph: the relevant LFN</span>
+<span class="sd">        - nrand: the number of dead firms chosen in an uncorrelated way.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        - array of number_dead dead rows from all_rows</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="n">number_dead</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_rows</span><span class="p">)</span> <span class="c1">#sanity check</span>
+    <span class="c1">#Get nrand dead rows</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">all_rows</span><span class="p">)</span>
+    <span class="n">deadrand</span> <span class="o">=</span> <span class="n">all_rows</span><span class="p">[:</span><span class="n">nrand</span><span class="p">]</span>
+    <span class="c1">#Get all rows corresponding to first neighbours of firms in deadrand</span>
+    <span class="n">all_neighs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1">#container set for all the first neighs of dead nodes</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">deadrand</span><span class="p">:</span>
+        <span class="n">firm_id</span> <span class="o">=</span> <span class="n">row_to_id</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="c1">#get firm ID</span>
+        <span class="n">neighs_id</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">firm_id</span><span class="p">)</span> <span class="c1">#get neighbours</span>
+        <span class="n">neighs</span> <span class="o">=</span> <span class="p">[</span><span class="n">id_to_row</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">neighs_id</span><span class="p">]</span> <span class="c1">#get rows corresp. to neighs</span>
+        <span class="n">all_neighs</span> <span class="o">=</span> <span class="n">all_neighs</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">neighs</span><span class="p">))</span> <span class="c1">#add neighs to all_neighs</span>
+    <span class="c1">#Get nneighs dead rows, making sure that we don&#39;t choose the same row twice</span>
+    <span class="n">alive_neighs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_neighs</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">deadrand</span><span class="p">)))</span> <span class="c1">#get alive neighs</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">alive_neighs</span><span class="p">)</span>
+    <span class="n">nneighs</span> <span class="o">=</span> <span class="n">number_dead</span> <span class="o">-</span> <span class="n">nrand</span>
+    <span class="k">assert</span> <span class="n">nneighs</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">alive_neighs</span><span class="p">)</span> <span class="c1">#sanity check</span>
+    <span class="n">deadrand_neighs</span> <span class="o">=</span> <span class="n">alive_neighs</span><span class="p">[:</span><span class="n">nneighs</span><span class="p">]</span>
+    <span class="n">deadrand_total</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">deadrand_neighs</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">deadrand</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deadrand_total</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MCAddRun"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.MCAddRun">[docs]</a><span class="k">def</span> <span class="nf">MCAddRun</span><span class="p">(</span><span class="n">mc_results</span><span class="p">,</span> <span class="n">mc_results_single</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Updates the mc_results variable with the results of a Monte Carlo run.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - mc_results: stores all Monte Carlo results,</span>
+<span class="sd">          mc_results[ell] = [no. pairs with ell in run 1, no. pairs with ell in</span>
+<span class="sd">          run 2, ...]</span>
+<span class="sd">        - mc_results_single: results of a single Monte Carlo Run, ie,</span>
+<span class="sd">          mc_results[ell] = no. pairs of dead rows with ell in last MC run.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="n">mc_results</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">mc_results_single</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="c1">#sanity check</span>
+    <span class="k">for</span> <span class="n">ell</span> <span class="ow">in</span> <span class="n">mc_results_single</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">mc_results</span><span class="p">[</span><span class="n">ell</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">mc_results_single</span><span class="p">[</span><span class="n">ell</span><span class="p">]]</span></div>
+
+
+<span class="c1">#================================================</span>
+<span class="c1">#---define main()-----</span>
+<span class="c1">#================================================</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../src.shortest_path_lengths.html#src.shortest_path_lengths.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span>
+        <span class="n">flow_years</span><span class="p">,</span> <span class="n">death_years</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+        <span class="n">nflowrows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ndeathrows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">mc_runs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mc_force_number_dead</span> <span class="o">=</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span>
+        <span class="n">nrand</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            - flow_years: format &#39;year1-year2&#39;. The LFN will be created from</span>
+<span class="sd">              flows in this time period.</span>
+<span class="sd">            - death_years: &#39;all&#39; or &#39;starty-endyr&#39;. If &#39;all&#39; then all firm</span>
+<span class="sd">              deaths will be considered, if string in form stated is provided</span>
+<span class="sd">              then only deaths in the specified years are considered.</span>
+<span class="sd">            - nflowrows: can be used to resrict the number of lines of the flow</span>
+<span class="sd">              file that are read. This speeds things up (since the resulting LFN</span>
+<span class="sd">              is smaller).</span>
+<span class="sd">            - ndeathrows: can be used to restrict the number of lines of the</span>
+<span class="sd">              death file that are read.</span>
+<span class="sd">            - mc_runs: the number of Monte Carlo runs to be completed.</span>
+<span class="sd">            - mc_force_number_dead: default for number of dead firms in the</span>
+<span class="sd">              Monte Carlo is the number that actuall died in the period.</span>
+<span class="sd">              However, with this input you can choose the number of firms to be</span>
+<span class="sd">              randomly chosen to die.</span>
+<span class="sd">            - proportion_rand: proportion of dead firms in each Monte Carlo runs</span>
+<span class="sd">              that are chosen completely at random (the remaining dead firms are</span>
+<span class="sd">              chosen from the neighbours of the already dead firms). See docs</span>
+<span class="sd">              for DeadRowsPartialRand.</span>
+<span class="sd">        Outputs:</span>
+<span class="sd">            - results: the number of pairs of dead nodes between which the</span>
+<span class="sd">              shortest path is ell for every possible ell. Stored as dictionary</span>
+<span class="sd">              results[ell] = no. pairs dead nodes with this ell. Saved to</span>
+<span class="sd">              reports.</span>
+<span class="sd">            - mc_results: similar to results, except this time we repeat over</span>
+<span class="sd">              and over for &#39;dead&#39; nodes chosen at random in the Monte Carlo.</span>
+<span class="sd">              Also saved to reports.</span>
+<span class="sd">            - nb if the number of rows being read in is restricted then the</span>
+<span class="sd">              filename is prepended with &#39;TEST&#39;.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#--- 0.0. Check to see if test---</span>
+        <span class="c1">#==================================================================</span>
+        <span class="k">if</span> <span class="n">nflowrows</span><span class="o">!=</span><span class="kc">None</span> <span class="ow">or</span> <span class="n">ndeathrows</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+            <span class="n">test</span><span class="o">=</span><span class="kc">True</span>
+
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#---0.1. Make output filepaths---</span>
+        <span class="c1">#==================================================================</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;flows&#39;</span> <span class="o">+</span> <span class="n">flow_years</span> <span class="o">+</span> <span class="s1">&#39;_deaths&#39;</span> <span class="o">+</span> <span class="n">death_years</span>
+        <span class="n">results_filename</span> <span class="o">=</span> <span class="s1">&#39;res_&#39;</span> <span class="o">+</span> <span class="n">info</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+        <span class="n">mc_results_filename</span> <span class="o">=</span> <span class="s1">&#39;mcres_&#39;</span> <span class="o">+</span> <span class="n">info</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="s1">&#39;data/processed&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">test</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+            <span class="n">mc_results_filename</span> <span class="o">=</span> <span class="s1">&#39;test_&#39;</span> <span class="o">+</span> <span class="n">mc_results_filename</span>
+            <span class="n">results_filename</span> <span class="o">=</span> <span class="s1">&#39;test_&#39;</span> <span class="o">+</span> <span class="n">results_filename</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nrand</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mc_results_filename</span> <span class="o">=</span> <span class="s1">&#39;nrand&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nrand</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span> <span class="n">mc_results_filename</span>
+            <span class="n">results_filename</span> <span class="o">=</span> <span class="s1">&#39;nrand&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nrand</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span> <span class="n">results_filename</span>
+        <span class="n">results_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">results_filename</span><span class="p">)</span>
+        <span class="n">mc_results_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">mc_results_filename</span><span class="p">)</span>
+
+        <span class="c1">#check to see if output filepaths already exist:</span>
+        <span class="n">gen</span><span class="o">.</span><span class="n">CheckExistence</span><span class="p">(</span><span class="n">results_filepath</span><span class="p">,</span> <span class="n">allow_overwrite</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
+        <span class="n">gen</span><span class="o">.</span><span class="n">CheckExistence</span><span class="p">(</span><span class="n">mc_results_filepath</span><span class="p">,</span> <span class="n">allow_overwrite</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
+
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#---1. Create LFN based on a period of flows-----</span>
+        <span class="c1">#==================================================================</span>
+        <span class="n">lfn</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">LFN</span><span class="p">(</span><span class="n">flow_years</span><span class="p">,</span> <span class="n">nflow_rows</span><span class="o">=</span><span class="n">nflowrows</span><span class="p">)</span>
+
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#---2. Determine dead firms based on a period of deaths.-----</span>
+        <span class="c1">#==================================================================</span>
+        <span class="n">dead_ids</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">GetDeadIds</span><span class="p">(</span>
+                        <span class="n">dat</span><span class="o">.</span><span class="n">deaths_filepath</span><span class="p">,</span> <span class="n">death_years</span><span class="p">,</span> <span class="n">ndeathrows</span>
+                        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number dead firms: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dead_ids</span><span class="p">)))</span>
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#---3. Find the shortest path between each pair of nodes in the LFN.---</span>
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#shp = SHortest Paths.</span>
+        <span class="c1">#Transform datastructure to array</span>
+        <span class="n">shp_dictofdicts</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_shortest_path_length</span><span class="p">(</span><span class="n">lfn</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        <span class="n">shp_array</span><span class="p">,</span> <span class="n">row_to_id</span><span class="p">,</span> <span class="n">id_to_row</span> <span class="o">=</span> <span class="n">SHPToArray</span><span class="p">(</span><span class="n">shp_dictofdicts</span><span class="p">)</span>
+
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#---4. Find shortest path length between each pair of dead firms.----</span>
+        <span class="c1">#==================================================================</span>
+        <span class="n">dead_rows</span> <span class="o">=</span> <span class="n">DeadRows</span><span class="p">(</span><span class="n">dead_ids</span><span class="p">,</span> <span class="n">id_to_row</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number dead rows: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dead_rows</span><span class="p">)))</span>
+        <span class="n">max_ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">shp_array</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">Cshp</span><span class="o">.</span><span class="n">CDeadShortestPaths</span><span class="p">(</span>
+                                    <span class="n">dead_rows</span><span class="p">,</span> <span class="n">shp_array</span><span class="p">,</span>
+                                    <span class="n">max_ell</span><span class="o">=</span><span class="n">max_ell</span>
+                                    <span class="p">)</span>
+        <span class="n">gen</span><span class="o">.</span><span class="n">SavePkl</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">results_filepath</span><span class="p">)</span>
+
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#---5. Compare lengths of paths between dead firms with Monte Carlo ----</span>
+        <span class="c1">#==================================================================</span>
+        <span class="c1">#choose number of dead rows</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing Monte Carlo runs&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mc_force_number_dead</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+            <span class="n">number_dead</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dead_rows</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">number_dead</span> <span class="o">=</span> <span class="n">mc_force_number_dead</span>
+        <span class="n">all_rows</span> <span class="o">=</span> <span class="n">id_to_row</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">mc_results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_ell</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">mc_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">mc_runs</span><span class="p">)):</span> <span class="c1">#tqdm prints out a progressbar for loop</span>
+            <span class="c1">#get dead rows; can choose either completely or partially random</span>
+            <span class="k">if</span> <span class="n">nrand</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mc_dead_rows</span> <span class="o">=</span> <span class="n">DeadRowsRand</span><span class="p">(</span><span class="n">number_dead</span><span class="p">,</span> <span class="n">all_rows</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mc_dead_rows</span> <span class="o">=</span> <span class="n">DeadRowsPartialRand</span><span class="p">(</span>
+                                        <span class="n">number_dead</span><span class="p">,</span> <span class="n">all_rows</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">nrand</span><span class="p">,</span>
+                                        <span class="n">row_to_id</span><span class="p">,</span> <span class="n">id_to_row</span>
+                                        <span class="p">)</span>
+            <span class="c1">#get results for single Monte Carlo Run</span>
+            <span class="n">mc_results_single</span> <span class="o">=</span> <span class="n">Cshp</span><span class="o">.</span><span class="n">CDeadShortestPaths</span><span class="p">(</span>
+                                            <span class="n">mc_dead_rows</span><span class="p">,</span> <span class="n">shp_array</span><span class="p">,</span>
+                                            <span class="n">max_ell</span><span class="o">=</span><span class="n">max_ell</span>
+                                            <span class="p">)</span>
+            <span class="c1">#add results for this run to overall</span>
+            <span class="n">MCAddRun</span><span class="p">(</span><span class="n">mc_results</span><span class="p">,</span> <span class="n">mc_results_single</span><span class="p">)</span>
+            <span class="n">gen</span><span class="o">.</span><span class="n">SavePkl</span><span class="p">(</span><span class="n">mc_results</span><span class="p">,</span> <span class="n">mc_results_filepath</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---Warning: code not fully tested&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---No check to see if mcres already exists with some runs&#39;</span><span class="p">,</span>
+        <span class="s1">&#39; in. This would allow more runs to be added at a later date.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;COMPLETE&#39;</span><span class="p">)</span></div>
+
+<span class="c1">#================================================</span>
+<span class="c1">#---call main-----</span>
+<span class="c1">#================================================</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1996-2006&#39;</span><span class="p">]:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">flow_years</span><span class="o">=</span><span class="s1">&#39;1996-1997&#39;</span><span class="p">,</span> <span class="n">death_years</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">nflowrows</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                <span class="n">mc_runs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nrand</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ndeathrows</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1">#add info about number of deaths to filename</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

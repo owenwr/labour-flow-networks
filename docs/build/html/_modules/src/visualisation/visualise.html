@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src.visualisation.visualise &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for src.visualisation.visualise</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Functions for visualising shortest paths data.</span>
+
+<span class="sd">Data inputted in the form of dictionaries where keys k are path lengths and</span>
+<span class="sd">values are (lists of, corresponding to different Monte Carlo runs) the number of</span>
+<span class="sd">pairs of dead nodes between the shortest path is of length k.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;ggplot&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">src.general</span> <span class="k">as</span> <span class="nn">gen</span>
+
+<div class="viewcode-block" id="BoxPlotInset"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.BoxPlotInset">[docs]</a><span class="k">def</span> <span class="nf">BoxPlotInset</span><span class="p">(</span><span class="n">inset_ell_value</span><span class="p">,</span> <span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">,</span> <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+    <span class="n">inset_xticklabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$\ell = $&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">inset_ell_value</span><span class="p">)]</span>
+    <span class="n">inset_monte_carlo</span> <span class="o">=</span> <span class="p">[</span><span class="n">mc_res</span><span class="p">[</span><span class="n">inset_ell_value</span><span class="p">]]</span>
+    <span class="n">inset_actual</span> <span class="o">=</span> <span class="p">[</span><span class="n">actual_res</span><span class="p">[</span><span class="n">inset_ell_value</span><span class="p">]]</span>
+    <span class="n">ax_inset</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="c1"># inset axes</span>
+    <span class="n">bp_inset</span> <span class="o">=</span> <span class="n">ax_inset</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
+            <span class="n">inset_monte_carlo</span><span class="p">,</span> <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">showcaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">boxprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">medianprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">),</span>
+            <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">whiskerprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+    <span class="n">ax_inset</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">inset_xticklabels</span><span class="p">)</span>
+    <span class="n">ax_inset</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax_inset</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+    <span class="n">ax_inset</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                    <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">inset_actual</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span>
+                    <span class="p">)</span>
+    <span class="n">ax_inset</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax_inset</span></div>
+
+<div class="viewcode-block" id="BoxPlot"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.BoxPlot">[docs]</a><span class="k">def</span> <span class="nf">BoxPlot</span><span class="p">(</span><span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">,</span> <span class="n">ell_values</span><span class="p">,</span> <span class="n">fig_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create series of box plots for shortest path length data. ell=1 and ell=2</span>
+<span class="sd">    boxplots are added as insets with larger scales.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - mc_res: dictionary with keys as ell values and values as lists</span>
+<span class="sd">          [ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead</span>
+<span class="sd">          nodes between which the shortest path was of length ell in the ith</span>
+<span class="sd">          Monte Carlo run</span>
+<span class="sd">        - actual_res: dictionary, actual_res[ell] = &#39;number of pairs of dead</span>
+<span class="sd">          nodes between which shortest path is ell&#39;</span>
+<span class="sd">        - ell_values: list of ell values for which we want to generate box plots</span>
+<span class="sd">        - fig_dir: directory where figures are stored</span>
+<span class="sd">        - info: string containing the flow years and death years used for the</span>
+<span class="sd">          data</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="c1">#Check to see if there are shortest path lenghts in one dictionary that are</span>
+    <span class="c1">#not in the other</span>
+    <span class="n">all_lengths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mc_res</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">actual_res</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">lengths_in_both</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mc_res</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">actual_res</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">lengths_not_in_both</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_lengths</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lengths_in_both</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">lengths_not_in_both</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lengths_not_in_both</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="s1">&#39; not in both&#39;</span><span class="p">)</span>
+    <span class="c1">#Format data for boxplot</span>
+    <span class="n">xticklabels</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#the labels on the x-axis</span>
+    <span class="n">monte_carlo</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#values for y-axis for mc</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#values for y-axis for actual</span>
+    <span class="k">for</span> <span class="n">ell</span> <span class="ow">in</span> <span class="n">ell_values</span><span class="p">:</span>
+        <span class="n">xticklabels</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;$\ell = $&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ell</span><span class="p">)]</span>
+        <span class="n">monte_carlo</span> <span class="o">+=</span> <span class="p">[</span><span class="n">mc_res</span><span class="p">[</span><span class="n">ell</span><span class="p">]]</span>
+        <span class="n">actual</span> <span class="o">+=</span> <span class="p">[</span><span class="n">actual_res</span><span class="p">[</span><span class="n">ell</span><span class="p">]]</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span> <span class="c1">#create empty figure</span>
+    <span class="c1">#Create axes</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">#main axes</span>
+    <span class="c1">#Create boxplots</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">monte_carlo</span><span class="p">,</span> <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">showcaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">boxprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">),</span>
+                    <span class="n">medianprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">),</span>
+                    <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">whiskerprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticklabels</span><span class="p">)</span>
+    <span class="c1">#Plot actual results</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ell_values</span><span class="p">],</span> <span class="n">actual</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;--&#39;</span> <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ell_values</span><span class="p">],</span> <span class="n">actual</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#Add Title and Axes Labels</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                <span class="s1">&#39;Comparison of results of &#39;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mc_res</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="o">+</span> <span class="s1">&#39; Monte Carlo runs with actual results.</span><span class="se">\n</span><span class="s1">Flows: &#39;</span>
+                <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetFlowYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39;,  Deaths: &#39;</span>
+                <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetDeathYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+                <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetNrand</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+                <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Length of shortest path between two dead nodes, $\ell$&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Number of pairs of dead nodes with $\ell$&#39;</span><span class="p">)</span>
+    <span class="c1">#Add inset for ell=1</span>
+    <span class="n">BoxPlotInset</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+    <span class="c1">#Add inset for ell=2</span>
+    <span class="n">BoxPlotInset</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+    <span class="c1">#Add inset for ell=-1 (ie no path)</span>
+    <span class="n">BoxPlotInset</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+    <span class="c1">#Change y lim</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.01</span><span class="o">*</span><span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1">#---------------------</span>
+    <span class="c1">#Show or Save Figure</span>
+    <span class="c1">#---------------------</span>
+    <span class="k">if</span> <span class="n">fig_dir</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">save_location</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fig_dir</span><span class="p">,</span> <span class="s1">&#39;boxplots&#39;</span><span class="p">,</span> <span class="s1">&#39;bp_flows&#39;</span>
+        <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetFlowYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_deaths&#39;</span> <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetDeathYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetNrand</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_location</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GetRatios"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.GetRatios">[docs]</a><span class="k">def</span> <span class="nf">GetRatios</span><span class="p">(</span><span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates dictionary of ratios of the actual result to the average result of</span>
+<span class="sd">    the number of pairs of firms with each ell value.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - mc_res: dictionary with keys as ell values and values as lists</span>
+<span class="sd">          [ell1, ell2, ..., elli, ...] where elli is the number of pairs of dead</span>
+<span class="sd">          nodes between which the shortest path was of length ell in the ith</span>
+<span class="sd">          Monte Carlo run.</span>
+<span class="sd">        - actual_res: dictionary, actual_res[ell] = &#39;number of pairs of dead</span>
+<span class="sd">          nodes between which shortest path is ell&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        - dictionary such that dict[ell_value] = ratio</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#Get the average number of firms with each ell value from Monte Carlo</span>
+    <span class="n">mc_avg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mc_res</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mc_res</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mc_res</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+        <span class="n">mc_avg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">avg</span>
+    <span class="c1">#Get ratio: actual/mc_avg for each ell value</span>
+    <span class="n">ratios</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">actual_res</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">actual_res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">mc_avg</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">ratios</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span>
+    <span class="k">return</span> <span class="n">ratios</span></div>
+
+<div class="viewcode-block" id="RatiosBarCharts"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.RatiosBarCharts">[docs]</a><span class="k">def</span> <span class="nf">RatiosBarCharts</span><span class="p">(</span>
+                    <span class="n">data_list</span><span class="p">,</span> <span class="n">ell_values</span><span class="p">,</span>
+                    <span class="n">fig_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">overlay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Produces and saves plot of the ratio of the actual result to the average</span>
+<span class="sd">    result of the number of pairs of firms with each ell value.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - data_list: list of tuples of filepaths in format</span>
+<span class="sd">          [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths</span>
+<span class="sd">          are for pickle files that contain the dictionaries with keys as ell</span>
+<span class="sd">          values such that:</span>
+
+<span class="sd">            - mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the</span>
+<span class="sd">              number of pairs of dead nodes between which the shortest path is</span>
+<span class="sd">              ell in the ith Monte Carlo run,</span>
+<span class="sd">            - actual_res_i[ell]= &#39;number of pairs of dead nodes between which</span>
+<span class="sd">              the shortest path is ell in actual LFN&#39;</span>
+
+<span class="sd">        - ell_values: list of ell values for which we want to generate bars</span>
+<span class="sd">        - fig_dir: directory where figures are stored</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#loop over data_list</span>
+    <span class="k">for</span> <span class="n">filepath_pair</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">:</span>
+        <span class="n">mc_filepath</span> <span class="o">=</span> <span class="n">filepath_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">actual_filepath</span> <span class="o">=</span> <span class="n">filepath_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">#check filepaths corresponds to same flow years and death years</span>
+        <span class="n">gen</span><span class="o">.</span><span class="n">CheckSameData</span><span class="p">(</span><span class="n">mc_filepath</span><span class="p">,</span> <span class="n">actual_filepath</span><span class="p">)</span>
+        <span class="c1">#load dicts from pickle files</span>
+        <span class="n">mc_res</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetPkl</span><span class="p">(</span><span class="n">mc_filepath</span><span class="p">)</span>
+        <span class="n">actual_res</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetPkl</span><span class="p">(</span><span class="n">actual_filepath</span><span class="p">)</span>
+        <span class="c1">#create figure and axes for plotting</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">#first row, first column, one subplot</span>
+        <span class="c1">#get ratios</span>
+        <span class="n">ratios</span> <span class="o">=</span> <span class="n">GetRatios</span><span class="p">(</span><span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">)</span>
+        <span class="c1">#Make bar chart</span>
+        <span class="n">start</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">ell_values</span><span class="p">)</span>
+        <span class="n">end</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">ell_values</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+                <span class="n">ratios</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">ratios</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span>
+                <span class="n">width</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span>
+                <span class="p">)</span>
+        <span class="c1">#add titles, axis labels, and formatting</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
+        <span class="n">info</span><span class="o">=</span><span class="n">mc_filepath</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Bar chart of ratios of actual number of pairs of firms with&#39;</span>\
+                    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">each ell value to the average in a Monte Carlo with &#39;</span> \
+                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mc_res</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39; runs.</span><span class="se">\n</span><span class="s1">Flows: &#39;</span>
+                    <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetFlowYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s1">&#39;,  Deaths: &#39;</span>
+                    <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetDeathYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+                    <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetNrand</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;actual/mc_avg&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;ell value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="c1">#Get output filepath and save</span>
+        <span class="k">if</span> <span class="n">fig_dir</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;ratios_&#39;</span> <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetFlowYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_deaths&#39;</span>  \
+            <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetDeathYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetNrand</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span>
+            <span class="k">if</span> <span class="n">log</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;log_&#39;</span> <span class="o">+</span> <span class="n">filename</span>
+            <span class="k">if</span> <span class="n">overlay</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;overlay_&#39;</span> <span class="o">+</span> <span class="n">filename</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fig_dir</span><span class="p">,</span> <span class="s1">&#39;ratiosbarchart&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RatiosOverlay"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.RatiosOverlay">[docs]</a><span class="k">def</span> <span class="nf">RatiosOverlay</span><span class="p">(</span>
+                    <span class="n">data_list</span><span class="p">,</span> <span class="n">ell_values</span><span class="p">,</span>
+                    <span class="n">fig_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cal_at</span><span class="o">=</span><span class="kc">None</span>
+                <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plots of ratio against ell value. Overlay plots for different death years.</span>
+
+<span class="sd">    Specifically, overlay each set of data in the lists [mc_res] and</span>
+<span class="sd">    [actual_res] and rescale so that they are overlayed and the shape can be</span>
+<span class="sd">    compared. Rescaling is done by shifting a curve up the y-axis *after* logs</span>
+<span class="sd">    have been taken of the ratios.</span>
+
+<span class="sd">    Intended to determine whether the behaviour for high ell values looks the</span>
+<span class="sd">    same no matter how long we wait for deaths.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - data_list: list of tuples of filepaths in format</span>
+<span class="sd">          [(mc_res_1, actual_res_1), ..., (mc_res_n, actual_res_n)]. Filepaths</span>
+<span class="sd">          are for pickle files that contain the dictionaries with keys as ell</span>
+<span class="sd">          values such that:</span>
+
+<span class="sd">            - mc_res_i[ell] = [n_1, n_2, ..., n_i, ...] where n_i is the</span>
+<span class="sd">              number of pairs of dead nodes between which the shortest path is</span>
+<span class="sd">              ell in the ith Monte Carlo run,</span>
+<span class="sd">            - actual_res_i[ell]= &#39;number of pairs of dead nodes between which</span>
+<span class="sd">              the shortest path is ell in actual LFN&#39;</span>
+
+<span class="sd">        - ell_values: list of ell values for which we want to generate box plots</span>
+<span class="sd">        - fig_dir: directory where figures are stored</span>
+<span class="sd">        - cal_at: int saying which ell_value we will calibrate at</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        - plot</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">#first row, first column, one subplot</span>
+    <span class="n">first_loop</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">filepath_pair</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">:</span>
+        <span class="n">mc_filepath</span> <span class="o">=</span> <span class="n">filepath_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">actual_filepath</span> <span class="o">=</span> <span class="n">filepath_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">#check filepaths corresponds to same flow years and death years</span>
+        <span class="n">gen</span><span class="o">.</span><span class="n">CheckSameData</span><span class="p">(</span><span class="n">mc_filepath</span><span class="p">,</span> <span class="n">actual_filepath</span><span class="p">)</span>
+        <span class="c1">#load dicts from pickle files</span>
+        <span class="n">mc_res</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetPkl</span><span class="p">(</span><span class="n">mc_filepath</span><span class="p">)</span>
+        <span class="n">actual_res</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetPkl</span><span class="p">(</span><span class="n">actual_filepath</span><span class="p">)</span>
+        <span class="c1">#get ratios</span>
+        <span class="n">ratios</span> <span class="o">=</span> <span class="n">GetRatios</span><span class="p">(</span><span class="n">mc_res</span><span class="p">,</span> <span class="n">actual_res</span><span class="p">)</span>
+        <span class="n">log_ratios</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ratios</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">log_ratios</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ratios</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="c1">#set shift calibrator (or if it already exists do shift)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cal_at</span><span class="p">)</span><span class="o">==</span><span class="nb">int</span><span class="p">:</span> <span class="c1">#check that we want calibration</span>
+            <span class="k">if</span> <span class="n">first_loop</span><span class="p">:</span>
+                <span class="c1">#get the ratio value against which we will cal the others</span>
+                <span class="n">cal_value</span> <span class="o">=</span> <span class="n">log_ratios</span><span class="p">[</span><span class="n">cal_at</span><span class="p">]</span>
+                <span class="n">cal_log_ratios</span> <span class="o">=</span> <span class="n">log_ratios</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#calibrate the ratios against the first data set</span>
+                <span class="n">cal_difference</span> <span class="o">=</span> <span class="n">log_ratios</span><span class="p">[</span><span class="n">cal_at</span><span class="p">]</span> <span class="o">-</span> <span class="n">cal_value</span>
+                <span class="n">cal_log_ratios</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">log_ratios</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">cal_log_ratios</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_ratios</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">cal_difference</span>
+                <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span>
+                                    <span class="n">cal_log_ratios</span><span class="p">[</span><span class="n">cal_at</span><span class="p">],</span>
+                                    <span class="n">cal_value</span><span class="p">,</span>
+                                    <span class="n">rtol</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">08</span>
+                                    <span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">cal_log_ratios</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">cal_log_ratios</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">log_ratios</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">log_ratios</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="c1">#add line plot</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ell_values</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ell_values</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mc_filepath</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Flows: &#39;</span> <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetFlowYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> \
+                <span class="o">+</span> <span class="s1">&#39;,  Deaths: &#39;</span> \
+                <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetDeathYears</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> \
+                <span class="o">+</span> <span class="s1">&#39; &#39;</span> \
+                <span class="o">+</span> <span class="n">gen</span><span class="o">.</span><span class="n">GetNrand</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span>
+                <span class="p">)</span>
+        <span class="n">first_loop</span><span class="o">=</span><span class="kc">False</span>
+    <span class="c1">#add titles, axis labels, and formatting</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Line chart showing ratios for different numbers of &#39;</span> \
+              <span class="s1">&#39;death years. With calibration at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">cal_at</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DegreeDist"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.DegreeDist">[docs]</a><span class="k">def</span> <span class="nf">DegreeDist</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">loglog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of the degree distribution of a NetworkX graph.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - graph : NetworkX graph</span>
+<span class="sd">        - loglog : bool</span>
+<span class="sd">            Set axes scales to be logarithmic.</span>
+<span class="sd">        - output_filepath : str</span>
+<span class="sd">            If an output filepath is provided then the plot is saved to that</span>
+<span class="sd">            location.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        - Pyplot plot.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">loglog</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Degree Distribution.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_filepath</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CCDist"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.CCDist">[docs]</a><span class="k">def</span> <span class="nf">CCDist</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of the distribution of connected component subgraph sizes from</span>
+<span class="sd">    a NetworkX graph.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - graph : NetworkX graph</span>
+<span class="sd">        - output_filepath : str</span>
+<span class="sd">            If an output filepath is provided then the plot is saved to that</span>
+<span class="sd">            location.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        - Pyplot plot.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cc_graphs</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_component_subgraphs</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">cc_graphs</span><span class="p">]</span>
+    <span class="n">sizes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sizes</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sizes</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">sizes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">get_major_formatter</span><span class="p">()</span><span class="o">.</span><span class="n">set_useOffset</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="c1">#turns spines off</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">tick_left</span><span class="p">()</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">tick_right</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelright</span><span class="o">=</span><span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="s1">&#39;on&#39;</span><span class="p">)</span>
+    <span class="c1">#add diagonal lines</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="mf">0.025</span> <span class="c1">#line size param</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">ax2</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1">#add titles and axes</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Histogram of sizes of connected components of graph.&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s1">&#39;horizontalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Component Size&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_filepath</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MonteCarloBoxPlot"><a class="viewcode-back" href="../../../src.visualisation.html#src.visualisation.visualise.MonteCarloBoxPlot">[docs]</a><span class="k">def</span> <span class="nf">MonteCarloBoxPlot</span><span class="p">(</span><span class="n">monte_carlo</span><span class="p">,</span> <span class="n">actual</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xpos</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot monte carlo results as box and whiskers plot with actual</span>
+<span class="sd">    result superimposed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        monte_carlo : list of scalars</span>
+<span class="sd">            List of the results of each monte carlo run</span>
+<span class="sd">        actual : scalar</span>
+<span class="sd">            Actual result.</span>
+<span class="sd">        info : string</span>
+<span class="sd">            Specifies what the plot is showing.</span>
+<span class="sd">        xpos : scalar</span>
+<span class="sd">            Specifies the position on the x-axis of the plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boxplot</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span> <span class="n">monte_carlo</span><span class="p">,</span>
+                <span class="n">showcaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="c1">#boxprops=dict(facecolor = &#39;red&#39;, linewidth=0, alpha = 0.8),</span>
+                <span class="n">medianprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">),</span>
+                <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">whiskerprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">),</span>
+                <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="n">xpos</span><span class="p">]</span>
+                <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">xpos</span><span class="p">],</span> <span class="p">[</span><span class="n">actual</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,)</span></div>
+
+<span class="c1">#end--</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
