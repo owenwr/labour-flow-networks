@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>general module &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="index.html" />
+    <link rel="up" title="src" href="src.html" />
+    <link rel="next" title="updated_degree module" href="src.updated_degree.html" />
+    <link rel="prev" title="setup module" href="src.setup.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-src.general">
+<span id="general-module"></span><h1>general module<a class="headerlink" href="#module-src.general" title="Permalink to this headline">¶</a></h1>
+<p>General functions for LFN project.</p>
+<dl class="function">
+<dt id="src.general.CheckExistence">
+<code class="descclassname">src.general.</code><code class="descname">CheckExistence</code><span class="sig-paren">(</span><em>filepath</em>, <em>allow_overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#CheckExistence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.CheckExistence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.general.CheckSameData">
+<code class="descclassname">src.general.</code><code class="descname">CheckSameData</code><span class="sig-paren">(</span><em>filename1</em>, <em>filename2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#CheckSameData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.CheckSameData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that the two filnames inputted correspond to LFNs built from the
+same years of flows and the same firm deaths.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.general.GetDeathYears">
+<code class="descclassname">src.general.</code><code class="descname">GetDeathYears</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#GetDeathYears"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.GetDeathYears" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the 9 characters after the word &#8216;deaths&#8217; or gets &#8216;all&#8217; if all.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.general.GetFlowYears">
+<code class="descclassname">src.general.</code><code class="descname">GetFlowYears</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#GetFlowYears"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.GetFlowYears" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the 9 characters after the word &#8216;flows&#8217;, by my convention these
+are the flow years</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.general.GetNrand">
+<code class="descclassname">src.general.</code><code class="descname">GetNrand</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#GetNrand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.GetNrand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the 4 characters after the word &#8216;nrand&#8217;, by my convention this
+is the number of dead firms chosen completely at random in the Monte Carlo.
+If there is no nrand return an empty string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.general.GetPkl">
+<code class="descclassname">src.general.</code><code class="descname">GetPkl</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#GetPkl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.GetPkl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.general.SavePkl">
+<code class="descclassname">src.general.</code><code class="descname">SavePkl</code><span class="sig-paren">(</span><em>obj</em>, <em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/general.html#SavePkl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.general.SavePkl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="src.html">src</a><ul>
+      <li>Previous: <a href="src.setup.html" title="previous chapter">setup module</a></li>
+      <li>Next: <a href="src.updated_degree.html" title="next chapter">updated_degree module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/src.general.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/src.general.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

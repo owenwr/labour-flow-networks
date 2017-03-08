@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting started &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="index.html" />
+    <link rel="next" title="Commands" href="commands.html" />
+    <link rel="prev" title="labour-flow-networks documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>All code is Python 2.7; all Python package requirements are in requirements.txt.
+If you have pip, use command pip install -r requirements.txt from the command
+line while in the labour-flow-networks project root directory and most recent
+versions of all relevant packages will be installed automatically. If you don&#8217;t
+have pip installed then google Anaconda Python and download the relevant
+Anaconda distribution for your operating system. This will give you pip.</p>
+<div class="section" id="data">
+<h2>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<p>All data used in this project is stored in the /data folder. The rawest form of
+the data I ever saw is in the /data/raw folder. However, this &#8216;raw&#8217; data is
+actually already processed, Omar Guerrero took it from the servers at Statistics
+Finland and cleaned it. Some of the outputs of my analysis scripts save data in
+the /data/processed folder.</p>
+<p>Despite Omar&#8217;s cleaning, there are problems with the data. For example, if you
+look at the number of firms that died in each year it looks like the data is not
+reliable before 1995. For this reason I tended to only analyse data from 1995
+onwards. Patrick Dendorfer has also found anomalies/problems in the data.</p>
+</div>
+<div class="section" id="lfn-class-objects">
+<h2>LFN Class Objects<a class="headerlink" href="#lfn-class-objects" title="Permalink to this headline">¶</a></h2>
+<p>In src/data/make_dataset_classes.py there is a class definition for an LFN
+object. Familiarity with the LFN object is important since it is the basis
+for everything. The class allows you to easily create and manipulate Labour
+Flow Networks.</p>
+</div>
+<div class="section" id="lfn-scripts">
+<h2>LFN Scripts<a class="headerlink" href="#lfn-scripts" title="Permalink to this headline">¶</a></h2>
+<p>The src folder contains a number of scripts. These scripts are for pieces of
+analysis I have done on Labour Flow Networks. Probably the most important is
+shortest_path_lengths.py. This script analyses the shortest path lengths
+between pairs of firms in general and between pairs of firms that died. The
+idea is to see if firms that die tend to be closer to each other in the network
+than random (a Monte Carlo simulation is used to find how far away we would
+expect them to be at random).</p>
+</div>
+<div class="section" id="reports">
+<h2>Reports<a class="headerlink" href="#reports" title="Permalink to this headline">¶</a></h2>
+<p>All the figures produced in scripts are saved in /reports/figures.</p>
+</div>
+<div class="section" id="filename-conventions">
+<h2>Filename Conventions<a class="headerlink" href="#filename-conventions" title="Permalink to this headline">¶</a></h2>
+<p>&#8216;flowyearsxxxx-yyyy&#8217;: signifies that the LFN in use was constructed from all
+the flows after year xxxx and before year yyyy.</p>
+<p>&#8216;deathsxxxx-yyyy&#8217;: signifies that firm deaths considered are those that
+occurred after year xxxx and before year yyyy.</p>
+<p>&#8216;res&#8217;: signifies results generated from the actual deaths of firms (as
+opposed to results from randomly generated deaths in a test or Monte
+Carlo simulation).</p>
+<p>&#8216;mc_res&#8217;: results generated from randomly generated Monte Carlo runs.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting started</a><ul>
+<li><a class="reference internal" href="#data">Data</a></li>
+<li><a class="reference internal" href="#lfn-class-objects">LFN Class Objects</a></li>
+<li><a class="reference internal" href="#lfn-scripts">LFN Scripts</a></li>
+<li><a class="reference internal" href="#reports">Reports</a></li>
+<li><a class="reference internal" href="#filename-conventions">Filename Conventions</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">labour-flow-networks documentation</a></li>
+      <li>Next: <a href="commands.html" title="next chapter">Commands</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/getting-started.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/getting-started.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

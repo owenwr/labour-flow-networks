@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src.what_affects_death &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for src.what_affects_death</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Look at how:</span>
+<span class="sd">(i) Degree,</span>
+<span class="sd">(ii) Sum of degrees of neighbours</span>
+<span class="sd">correlate with death rate.</span>
+
+<span class="sd">- Produce plots of proportion of firms dead against (i)-(ii).</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">data.make_dataset</span> <span class="k">as</span> <span class="nn">dat</span>
+<span class="kn">import</span> <span class="nn">general</span> <span class="k">as</span> <span class="nn">gen</span>
+<span class="kn">import</span> <span class="nn">collections</span> <span class="k">as</span> <span class="nn">col</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;ggplot&#39;</span><span class="p">)</span>
+
+<span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProportionDead"><a class="viewcode-back" href="../../src.what_affects_death.html#src.what_affects_death.ProportionDead">[docs]</a><span class="k">def</span> <span class="nf">ProportionDead</span><span class="p">(</span><span class="n">all_count_dict</span><span class="p">,</span> <span class="n">dead_count_dict</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Take dictionary of dead counts and compare it to dictionary of counts for</span>
+<span class="sd">    the entire LFN by taking ratios.</span>
+<span class="sd">    Return dictionary of proportion dead.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">prop_dead</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">all_count_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">prop_dead</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dead_count_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">all_count_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">prop_dead</span></div>
+
+<div class="viewcode-block" id="SelectNWithoutReplacement"><a class="viewcode-back" href="../../src.what_affects_death.html#src.what_affects_death.SelectNWithoutReplacement">[docs]</a><span class="k">def</span> <span class="nf">SelectNWithoutReplacement</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Select N elements from the list, choosing them uniformly at random.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">domain</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PropPlot"><a class="viewcode-back" href="../../src.what_affects_death.html#src.what_affects_death.PropPlot">[docs]</a><span class="k">def</span> <span class="nf">PropPlot</span><span class="p">(</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span>
+            <span class="n">dead_counted</span><span class="p">,</span> <span class="n">all_counted</span><span class="p">,</span>
+            <span class="n">prop_dead</span><span class="p">,</span> <span class="n">total_prop_dead</span><span class="p">,</span>
+            <span class="n">feature</span><span class="p">,</span>
+            <span class="n">fig_dir</span>
+            <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot proportions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - start: first x value we want.</span>
+<span class="sd">        - end: last x value we want.</span>
+<span class="sd">        - dead_counted: collections module count dict of number of dead firms</span>
+<span class="sd">          with each value of the feature.</span>
+<span class="sd">        - all_counted: as dead_counted except for all nodes in LFN.</span>
+<span class="sd">        - prop_dead: dictionary mapping feature values to proportion dead.</span>
+<span class="sd">        - total_prop_dead: overall proportion of firms in the LFN that died.</span>
+<span class="sd">        - feature: we examine the effect of the feature on the death rate.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+    <span class="c1">#plot distributions</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dead_counted</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span>
+            <span class="n">dead_counted</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Dead&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">all_counted</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span>
+            <span class="n">all_counted</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Total LFN&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Number of firms&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="c1">#plot propotions and average</span>
+    <span class="n">xvals</span> <span class="o">=</span> <span class="n">prop_dead</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="p">[</span><span class="n">total_prop_dead</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xvals</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Average&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">prop_dead</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Actual&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Proportion of Firms Dead&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="c1">#overall labels</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="c1">#show figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fig_dir</span><span class="p">,</span> <span class="s1">&#39;proportion_plot_&#39;</span> <span class="o">+</span> <span class="n">feature</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../src.what_affects_death.html#src.what_affects_death.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+    <span class="c1">#----------------------------</span>
+    <span class="c1">#---0. Input Parameters------</span>
+    <span class="c1">#----------------------------</span>
+
+    <span class="n">death_year1</span> <span class="o">=</span> <span class="mi">1996</span>
+    <span class="n">time_period</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">death_year2</span> <span class="o">=</span> <span class="n">death_year1</span> <span class="o">+</span> <span class="n">time_period</span>
+    <span class="n">death_years</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">StrFromYrs</span><span class="p">(</span><span class="n">death_year1</span><span class="p">,</span> <span class="n">death_year2</span><span class="p">)</span>
+
+    <span class="n">flow_years</span> <span class="o">=</span> <span class="s1">&#39;1996-1997&#39;</span>
+    <span class="n">nflowrows</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">number_mc_runs</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="c1">#----------------------------</span>
+    <span class="c1">#---1. Output Filepaths------</span>
+    <span class="c1">#----------------------------</span>
+    <span class="n">fig_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="s1">&#39;reports&#39;</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">)</span>
+
+    <span class="c1">#-------------------------------</span>
+    <span class="c1">#---2. Load LFN and Deaths------</span>
+    <span class="c1">#------------------------------</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">MakeLFN</span><span class="p">(</span><span class="n">flow_years</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">nflowrows</span><span class="p">)</span>
+
+    <span class="n">dead_ids</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">GetDeadIds</span><span class="p">(</span>  <span class="n">input_filepath</span><span class="o">=</span><span class="n">dat</span><span class="o">.</span><span class="n">deaths_filepath</span><span class="p">,</span>
+                                <span class="n">death_years</span><span class="o">=</span><span class="n">death_years</span>
+                                <span class="p">)</span>
+    <span class="c1">#get set of nodes that are both dead and in the LFN</span>
+    <span class="n">dead_in_LFN</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">DeadInLFN</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">dead_ids</span><span class="p">)</span>
+
+    <span class="c1">#get total number dead in LFN</span>
+    <span class="n">number_dead_in_LFN</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dead_in_LFN</span><span class="p">)</span>
+
+    <span class="c1">#total propotion dead</span>
+    <span class="n">total_prop_dead</span> <span class="o">=</span> <span class="n">number_dead_in_LFN</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+
+    <span class="c1">#--------------------------------------</span>
+    <span class="c1">#---3. Effect of Degree on Death------</span>
+    <span class="c1">#--------------------------------------</span>
+
+    <span class="c1">#find degrees of dead nodes and count</span>
+    <span class="n">dead_degrees</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dead_in_LFN</span><span class="p">]</span>
+    <span class="n">dead_degrees_counted</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">dead_degrees</span><span class="p">)</span>
+
+    <span class="c1">#find degrees of all nodes and count</span>
+    <span class="n">all_degrees</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">all_degrees_counted</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">all_degrees</span><span class="p">)</span>
+
+    <span class="c1">#get dictionary of proportion dead</span>
+    <span class="n">prop_dead_degrees</span> <span class="o">=</span> <span class="n">ProportionDead</span><span class="p">(</span><span class="n">all_degrees_counted</span><span class="p">,</span> <span class="n">dead_degrees_counted</span><span class="p">)</span>
+
+    <span class="c1">#Monte Carlo</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_mc_runs</span><span class="p">):</span>
+        <span class="n">dead_degrees_mc</span> <span class="o">=</span> <span class="n">SelectNWithoutReplacement</span><span class="p">(</span><span class="n">all_degrees</span><span class="p">,</span> <span class="n">number_dead_in_LFN</span><span class="p">)</span>
+        <span class="n">dead_degrees_counted_mc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">dead_degrees_mc</span><span class="p">)</span>
+
+    <span class="c1">#prop plot</span>
+    <span class="n">PropPlot</span><span class="p">(</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span>
+            <span class="n">dead_degrees_counted</span><span class="p">,</span> <span class="n">all_degrees_counted</span><span class="p">,</span>
+            <span class="n">prop_dead_degrees</span><span class="p">,</span> <span class="n">total_prop_dead</span><span class="p">,</span>
+            <span class="s1">&#39;Degree&#39;</span><span class="p">,</span>
+            <span class="n">fig_dir</span>
+            <span class="p">)</span>
+
+    <span class="c1">#------------------------------------------------------</span>
+    <span class="c1">#---4. Effect of Sum of Neighbour Degrees on Death------</span>
+    <span class="c1">#------------------------------------------------------</span>
+    <span class="c1">#find sums of degrees of neighbours of dead nodes and count</span>
+    <span class="n">dead_nsum_of_neighs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dead_in_LFN</span><span class="p">:</span>
+        <span class="n">neighs</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">dead_nsum_of_neighs</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">neighs</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
+
+    <span class="n">dead_nsum_counted</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">dead_nsum_of_neighs</span><span class="p">)</span>
+
+    <span class="n">nsum_of_neighs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#get sums of degrees of neighbours of all nodes</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">neighs</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">nsum_of_neighs</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">neighs</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
+
+    <span class="n">all_nsum_counted</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">nsum_of_neighs</span><span class="p">)</span>
+
+    <span class="c1">#get dictionary of proportion dead</span>
+    <span class="n">prop_dead_nsum</span> <span class="o">=</span> <span class="n">ProportionDead</span><span class="p">(</span><span class="n">all_nsum_counted</span><span class="p">,</span> <span class="n">dead_nsum_counted</span><span class="p">)</span>
+
+    <span class="c1">#Monte Carlo</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_mc_runs</span><span class="p">):</span>
+        <span class="n">dead_nsum_mc</span> <span class="o">=</span> <span class="n">SelectNWithoutReplacement</span><span class="p">(</span><span class="n">all_degrees</span><span class="p">,</span> <span class="n">number_dead_in_LFN</span><span class="p">)</span>
+        <span class="n">dead_nsum_counted_mc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">dead_degrees_mc</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">+=</span> <span class="n">dead_nsum_counted_mc</span>
+
+    <span class="c1">#prop plot</span>
+    <span class="n">PropPlot</span><span class="p">(</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span>
+            <span class="n">dead_nsum_counted</span><span class="p">,</span> <span class="n">all_nsum_counted</span><span class="p">,</span>
+            <span class="n">prop_dead_nsum</span><span class="p">,</span> <span class="n">total_prop_dead</span><span class="p">,</span>
+            <span class="s1">&#39;Sum_of_Neighbour_Degrees&#39;</span><span class="p">,</span>
+            <span class="n">fig_dir</span>
+            <span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+
+
+
+
+<span class="c1">#end</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
