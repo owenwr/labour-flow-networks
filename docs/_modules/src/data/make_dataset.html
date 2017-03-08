@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src.data.make_dataset &#8212; Labour Flow Networks 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Labour Flow Networks 0.2 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for src.data.make_dataset</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">**Mostly Deprecated** : use make_dataset_classes.py module instead.</span>
+
+<span class="sd">Functions to manipulate raw data.</span>
+
+<span class="sd">Merge two flow files to produce a flow file for multiple years.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
+
+<span class="n">deaths_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">project_root</span><span class="p">,</span>
+                                <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="s1">&#39;16-12-2016-Mega&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;dates_death.csv&#39;</span>
+                                <span class="p">)</span>
+
+<div class="viewcode-block" id="GetDeadIds"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.GetDeadIds">[docs]</a><span class="k">def</span> <span class="nf">GetDeadIds</span><span class="p">(</span><span class="n">input_filepath</span><span class="o">=</span><span class="n">deaths_filepath</span><span class="p">,</span> <span class="n">death_years</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get firms that died in one of the years in death_years.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - input_filepath: filepath of dates_deat.csv with column format</span>
+<span class="sd">          firm_id, year.</span>
+<span class="sd">        - death_years: range of years we wish deaths in with format</span>
+<span class="sd">          &#39;startyr-endyr&#39;, or &#39;all&#39; for all deaths. Deaths in the start year are</span>
+<span class="sd">          included, deaths in the end year are not, so to get deaths in 2009</span>
+<span class="sd">          require &#39;1996-2010&#39;.</span>
+<span class="sd">    Output:</span>
+<span class="sd">        - set : ids of firms that died in the specified period (or all firms</span>
+<span class="sd">          that died).</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">imported_dead</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">,</span>
+                                <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+    <span class="n">imported_dead</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">imported_dead</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">death_years</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="n">dead_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">imported_dead</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dead_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">startyr</span><span class="p">,</span> <span class="n">endyr</span> <span class="o">=</span> <span class="n">YrsFromStr</span><span class="p">(</span><span class="n">death_years</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imported_dead</span><span class="p">)):</span>
+            <span class="n">firm</span><span class="p">,</span> <span class="n">year</span> <span class="o">=</span> <span class="n">imported_dead</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">startyr</span><span class="p">,</span> <span class="n">endyr</span><span class="p">):</span>
+                <span class="n">dead_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">firm</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">dead_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="YrsFromStr"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.YrsFromStr">[docs]</a><span class="k">def</span> <span class="nf">YrsFromStr</span><span class="p">(</span><span class="n">years</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Take string in format &#39;year1-year2&#39; and return integers year1, year2</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">year1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">years</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">year2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">years</span><span class="p">[</span><span class="mi">5</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">year1</span><span class="p">,</span> <span class="n">year2</span></div>
+
+<div class="viewcode-block" id="StrFromYrs"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.StrFromYrs">[docs]</a><span class="k">def</span> <span class="nf">StrFromYrs</span><span class="p">(</span><span class="n">year1</span><span class="p">,</span> <span class="n">year2</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create string in format &#39;year1-year2&#39; from integers year1, year2</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">year1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">year2</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">year1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">year1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FlowsPath"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.FlowsPath">[docs]</a><span class="k">def</span> <span class="nf">FlowsPath</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">project_root</span><span class="o">=</span><span class="n">project_root</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates filepath for flows.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - years: flow years to be used, in form &#39;year1-year2&#39;</span>
+<span class="sd">        - project_root</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        - Flows filepath.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">raw_flows_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                <span class="n">project_root</span><span class="p">,</span>
+                                <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="s1">&#39;16-12-2016-Mega&#39;</span><span class="p">,</span> <span class="s1">&#39;flows&#39;</span>
+                                <span class="p">)</span>
+    <span class="n">processed_flows_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                        <span class="n">project_root</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;processed&#39;</span>
+    <span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;flows_&#39;</span> <span class="o">+</span> <span class="n">years</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+    <span class="n">raw_flows_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_flows_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">processed_flows_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processed_flows_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">raw_flows_filepath</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">raw_flows_filepath</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">processed_flows_filepath</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">processed_flows_dir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;File does not exist in normal places.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MakeFlowsDF"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.MakeFlowsDF">[docs]</a><span class="k">def</span> <span class="nf">MakeFlowsDF</span><span class="p">(</span><span class="n">flow_years</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">manual_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates a new list of flows from two lists of flows.</span>
+
+<span class="sd">    1. Check to see if flow file already exists</span>
+<span class="sd">    2. If it doesn&#39;t exist then create it from raw data files (might be quicker</span>
+<span class="sd">       to do creation by pre-existing merged files but that would make the code</span>
+<span class="sd">       harder...)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">flows_filepath</span> <span class="o">=</span> <span class="n">FlowsPath</span><span class="p">(</span><span class="n">flow_years</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">flows_filepath</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="n">startyr</span><span class="p">,</span> <span class="n">endyr</span> <span class="o">=</span> <span class="n">YrsFromStr</span><span class="p">(</span><span class="n">flow_years</span><span class="p">)</span>
+        <span class="n">year1</span><span class="p">,</span> <span class="n">year2</span> <span class="o">=</span> <span class="n">startyr</span><span class="p">,</span> <span class="n">startyr</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">year2</span> <span class="o">&lt;=</span> <span class="n">endyr</span><span class="p">:</span>
+            <span class="n">intermediate_flow_years</span> <span class="o">=</span> <span class="n">StrFromYrs</span><span class="p">(</span><span class="n">year1</span><span class="p">,</span> <span class="n">year2</span><span class="p">)</span>
+            <span class="n">flows_filepath</span> <span class="o">=</span> <span class="n">FlowsPath</span><span class="p">(</span><span class="n">intermediate_flow_years</span><span class="p">)</span>
+            <span class="n">df_add</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">flows_filepath</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_add</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">year1</span> <span class="o">+=</span><span class="mi">1</span>
+            <span class="n">year2</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="MakeLFN"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.MakeLFN">[docs]</a><span class="k">def</span> <span class="nf">MakeLFN</span><span class="p">(</span><span class="n">flow_years</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">manual_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Make Labour Flow Network where one job change is sufficient for a link.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - input_filepath: text file with col format</span>
+<span class="sd">          firm1_ID, firm2_ID, number</span>
+<span class="sd">        - nrows: option to restrict the number of rows of flows read in.</span>
+<span class="sd">           this allows for the creation of a smaller graph for testing.</span>
+<span class="sd">    returns:</span>
+<span class="sd">        - networkx graph</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#note that pandas deals with the header automatically so there</span>
+    <span class="c1"># is no need to do skiprows=1</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">MakeFlowsDF</span><span class="p">(</span><span class="n">flow_years</span><span class="p">,</span> <span class="n">manual_filepath</span><span class="o">=</span><span class="n">manual_filepath</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_dataframe</span><span class="p">(</span>
+                                <span class="n">df</span><span class="p">,</span>
+                                <span class="n">source</span><span class="o">=</span><span class="s1">&#39;from_firm&#39;</span><span class="p">,</span>
+                                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;to_firm&#39;</span><span class="p">,</span>
+                                <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span> <span class="c1">#take care with edge_attr=&#39;Number&#39;</span>
+                                <span class="c1"># it will record only the second instance of the</span>
+                                <span class="c1"># edge (ie it will only see one flow direction)</span>
+                                <span class="p">)</span>
+    <span class="c1">#set graph name to be of the form &#39;Flows: year1-year2&#39;</span>
+    <span class="n">graph_name</span> <span class="o">=</span> <span class="s1">&#39;LFN with flows: &#39;</span> <span class="o">+</span> <span class="n">flow_years</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span>
+    <span class="k">if</span> <span class="n">nrows</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">graph_name</span><span class="p">,</span> <span class="s1">&#39;Warning: Only used first&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">nrows</span><span class="p">),</span>
+        <span class="s1">&#39;of flows from each year</span><span class="se">\&#39;</span><span class="s1">s csv file (eg, if 1996-1997 then nrows will&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;have been used, but if 1996-1998 then 3*nrows will have been used).&#39;</span><span class="p">])</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">graph_name</span>
+    <span class="k">if</span> <span class="n">print_info</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">g</span></div>
+
+<div class="viewcode-block" id="DeadInLFN"><a class="viewcode-back" href="../../../src.data.html#src.data.make_dataset.DeadInLFN">[docs]</a><span class="k">def</span> <span class="nf">DeadInLFN</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">dead_ids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get set of firms ids that are both dead and in the LFN.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">dead_ids</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Owen Riddall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
