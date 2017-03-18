@@ -6,3 +6,4 @@ data/raw/16-12-2016-Mega/industrial-classification
 data/raw/16-12-2016-Mega/profits
 data/raw/16-12-2016-Mega/sizes
 *.pyc
+*.DS_Store
