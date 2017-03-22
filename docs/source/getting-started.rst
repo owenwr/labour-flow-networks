@@ -1,6 +1,17 @@
 Getting started
 ===============
 
+Installation
+--------------
+
+Installation steps:
+
+1. Download the project folder from https://github.com/owenwr/labour-flow-networks
+2. Obatin the data folder. The data is private, contact
+
+Requirements
+*************
+
 All code is Python 2.7; all Python package requirements are in requirements.txt.
 If you have pip, use command pip install -r requirements.txt from the command
 line while in the labour-flow-networks project root directory and most recent
