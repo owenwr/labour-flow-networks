@@ -1,7 +1,9 @@
 labour-flow-networks
 ==============================
 
-Empirical analysis of Labour Flow Networks (LFN). In an LFN nodes represent (anonymised but real) firms anddd a link is drawn between two nodes when there is a history of workers moving between the firms they represent.
+Empirical analysis of Labour Flow Networks.
+
+See documentation for installation instructions and information on Labour Flow Networks.
 
 Project Organization
 ------------

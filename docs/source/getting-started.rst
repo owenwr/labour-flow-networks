@@ -7,7 +7,10 @@ Installation
 Installation steps:
 
 1. Download the project folder from https://github.com/owenwr/labour-flow-networks
-2. Obatin the data folder. The data is private, contact
+2. Download the raw data folder. The data is private, contact Omar Guerrero; contact
+   details are avaliable on his website, http://oguerr.com/.
+3. Copy and paste the raw data folder into /data/raw/16-12-2016-Mega.
+4. Check that all software requirements are satisfied.
 
 Requirements
 *************
